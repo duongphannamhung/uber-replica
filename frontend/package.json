@@ -5,7 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "pwa": "npm run build && npx http-server dist",
+    "icons": "vue-asset-generate -a public/img/logo/Uber.png -o public/img/icons/ -b '#000000'"
   },
   "dependencies": {
     "autoprefixer": "^10",
@@ -25,6 +27,7 @@
   "devDependencies": {
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
+    "@fawmi/vue-google-maps": "^0.9.79",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-plugin-pwa": "~5.0.0",

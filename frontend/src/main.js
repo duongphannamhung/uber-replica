@@ -12,6 +12,8 @@ axios.defaults.baseURL = process.env.VUE_APP_API_URL
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
+import VueGoogleMaps from '@fawmi/vue-google-maps'
+
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
@@ -19,5 +21,12 @@ const app = createApp(App)
 
 app.use(router)
 app.use(pinia)
+
+app.use(VueGoogleMaps, {
+    load: {
+        key: process.env.VUE_APP_GOOGLE_MAP_API_KEY,
+        libraries: 'places'
+    }
+})
 
 app.mount('#app')

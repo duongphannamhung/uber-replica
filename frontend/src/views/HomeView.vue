@@ -8,7 +8,7 @@
 
       <div class="grid grid-cols-2 gap-3 my-3">
         <ServiceSelectLarge
-          @click="router.push('/directions')" 
+          @click="router.push('/location')" 
           text="Ride"
           imageWidth="74"
           image="ride"
@@ -41,7 +41,7 @@
       </div>
 
       <div 
-        @click="router.push('/directions')" 
+        @click="router.push('/location')" 
         class="
           w-full 
           bg-custom-color 
@@ -76,7 +76,7 @@
           Home
         </div>
       </div>
-      <div @click="router.push('/directions')" class="grid place-items-center">
+      <div @click="router.push('/location')" class="grid place-items-center">
         <MapMarkerIcon :size="30" fillColor="#b3b1b1"/>
         <div class="w-full -mt-1 text-xs text-center text-gray-400 font-semibold">
           Destination
@@ -94,16 +94,16 @@
     import MagnifyIcon from 'vue-material-design-icons/Magnify.vue';
     import HomeIcon from 'vue-material-design-icons/Home.vue';
     import MapMarkerIcon from 'vue-material-design-icons/MapMarker.vue';
-    import { onMounted } from '@vue/runtime-core';
-    import { useDirectionStore } from '@/store/direction-store';
+    // import { onMounted } from '@vue/runtime-core';
+    // import { useDirectionStore } from '@/store/direction-store';
 
     const router = useRouter()
-    const direction = useDirectionStore()
+    // const direction = useDirectionStore()
 
-    onMounted(() => {
-      direction.pickup = null
-      direction.destination = null
-    })
+    // onMounted(() => {
+    //   direction.pickup = null
+    //   direction.destination = null
+    // })
 </script>
 
 <style lang="scss" scoped>

@@ -9,7 +9,20 @@
       <ArrowLeftIcon :size="40" />
     </div>
 
-    <div id="map" />
+    <!-- <div id="map" > -->
+    <GMapMap v-if="location.destination.name !== ''" 
+        :zoom="4" :center="location.destination.geometry"
+        :options="{
+          minZoom: 3,
+          maxZoom : 17,
+          fullscreenControl : false,
+          zoomControl : false,
+          streetViewControl : false,
+          mapTypeControl : false
+        }"
+        ref="gMap"
+        style="width: 100%; height: 256px;">
+    </GMapMap>
 
     <div id="VehicleSelection" class=" w-full">
       <div class="w-full h-2 border-t"></div>
@@ -98,92 +111,145 @@
   import { onMounted, ref } from 'vue'
   import { useRouter } from 'vue-router'
   import ArrowLeftIcon from 'vue-material-design-icons/ArrowLeft.vue';
-  import { useDirectionStore } from '@/store/direction-store';
+  // import { useDirectionStore } from '@/store/direction-store';
+  import { useLocationStore } from '@/store/location'
+  // import { useTripStore } from '@/stores/trip'
 
-  import mapStyles from '../mapStyles'
+  // import mapStyles from '../mapStyles'
 
   const router = useRouter()
-  const direction = useDirectionStore()
+  const location = useLocationStore()
+  // const trip = useTripStore()
+
+  const gMap = ref(null)
+  
+  // const direction = useDirectionStore()
+
+  onMounted(async () => {
+      // does the user have a location set?
+      if (location.destination.name === '') {
+          router.push({
+              name: 'location'
+          })
+      }
+      // lets get the users current location
+      await location.updateCurrentLocation()
+
+      // draw a path on the map
+      gMap.value.$mapPromise.then((mapObject) => {
+          // eslint-disable-next-line
+          let currentPoint = new google.maps.LatLng(location.current.geometry),
+          // eslint-disable-next-line
+              destinationPoint = new google.maps.LatLng(location.destination.geometry),
+          // eslint-disable-next-line
+              directionsService = new google.maps.DirectionsService,
+          // eslint-disable-next-line
+              directionsDisplay = new google.maps.DirectionsRenderer({
+                  map: mapObject
+              })
+
+          directionsService.route({
+              origin: currentPoint,
+              destination: destinationPoint,
+              avoidTolls: false,
+              avoidHighways: false,
+          // eslint-disable-next-line
+              travelMode: google.maps.TravelMode.DRIVING
+          }, (res, status) => {
+          // eslint-disable-next-line
+              if (status === google.maps.DirectionsStatus.OK) {
+                  directionsDisplay.setDirections(res)
+                  getDistance()
+              } else {
+                  console.error(status)
+              }
+          })
+      })
+  })
 
   const distance = ref({text: '', value: null})
   const duration = ref({text: '', value: null})
-  const latLng = ref({ start: { lat: null, lng: null }, end: { lat: null, lng: null } })
+  // const latLng = ref({ start: { lat: null, lng: null }, end: { lat: null, lng: null } })
 
-  onMounted(async () => {
-    if (!direction.pickup || !direction.destination) { router.push('/') }
-    setTimeout(() => { initMap() }, 50)
-  })
+  // onMounted(async () => {
+  //   if (!direction.pickup || !direction.destination) { router.push('/') }
+  //   setTimeout(() => { initMap() }, 50)
+  // })
 
   const goBack = () => {
-    router.push('/directions')
-    direction.pickup = ''
-    direction.destination = ''
+    router.push('/location')
+    // direction.pickup = ''
+    // direction.destination = ''
   }
 
-  const initMap = () => {
+  // const initMap = () => {
 
-    const directionsService = new window.google.maps.DirectionsService()
-    const directionsRenderer = new window.google.maps.DirectionsRenderer()
+  //   const directionsService = new window.google.maps.DirectionsService()
+  //   const directionsRenderer = new window.google.maps.DirectionsRenderer()
 
-    directionsRenderer.setOptions({
-      polylineOptions: {
-        strokeColor: '#212121',
-        strokeWeight: 6
-      }
-    });
+  //   directionsRenderer.setOptions({
+  //     polylineOptions: {
+  //       strokeColor: '#212121',
+  //       strokeWeight: 6
+  //     }
+  //   });
 
-    const map = new window.google.maps.Map(document.getElementById("map"), {
-        zoom: 4,
-        minZoom: 3,
-        maxZoom: 17,
-        fullscreenControl: false,
-        zoomControl: false,
-        streetViewControl: false,
-        mapTypeControl: false,
+  //   const map = new window.google.maps.Map(document.getElementById("map"), {
+  //       zoom: 4,
+  //       minZoom: 3,
+  //       maxZoom: 17,
+  //       fullscreenControl: false,
+  //       zoomControl: false,
+  //       streetViewControl: false,
+  //       mapTypeControl: false,
         
-        // https://snazzymaps.com/editor/customize/15
-        styles: mapStyles()
-      });
+  //       // https://snazzymaps.com/editor/customize/15
+  //       styles: mapStyles()
+  //     });
 
-      if (direction.pickup && direction.destination) { 
-        getDirections(map, directionsRenderer, directionsService)
-        getDistance()
-      }
+  //     if (direction.pickup && direction.destination) { 
+  //       getDirections(map, directionsRenderer, directionsService)
+  //       getDistance()
+  //     }
 
-      return map
-  }
+  //     return map
+  // }
 
-  const getDirections = (map, directionsRenderer, directionsService) => {
+  // const getDirections = (map, directionsRenderer, directionsService) => {
     
-    directionsRenderer.setMap(map)
+  //   directionsRenderer.setMap(map)
 
-    const request = {
-      origin: direction.pickup,
-      destination: direction.destination,
-      optimizeWaypoints: true, // set to true if you want google to determine the shortest route or false to use the order specified.
-      travelMode: 'DRIVING'
-    }
+  //   const request = {
+  //     origin: direction.pickup,
+  //     destination: direction.destination,
+  //     optimizeWaypoints: true, // set to true if you want google to determine the shortest route or false to use the order specified.
+  //     travelMode: 'DRIVING'
+  //   }
 
-    directionsService.route(request, function (result, status) {
-      if (status === 'OK') {
+  //   directionsService.route(request, function (result, status) {
+  //     if (status === 'OK') {
 
-        latLng.value.start.lat = result.routes[0].legs[0].start_location.lat()
-        latLng.value.start.lng = result.routes[0].legs[0].start_location.lng()
-        latLng.value.end.lat = result.routes[0].legs[0].end_location.lat()
-        latLng.value.end.lng = result.routes[0].legs[0].end_location.lng()
+  //       latLng.value.start.lat = result.routes[0].legs[0].start_location.lat()
+  //       latLng.value.start.lng = result.routes[0].legs[0].start_location.lng()
+  //       latLng.value.end.lat = result.routes[0].legs[0].end_location.lat()
+  //       latLng.value.end.lng = result.routes[0].legs[0].end_location.lng()
 
-        directionsRenderer.setDirections(result)
-      }
-    })
-  }
+  //       directionsRenderer.setDirections(result)
+  //     }
+  //   })
+  // }
 
   const getDistance = async () => {
-    let res = await axios.get('distance/' + direction.pickup + '/' + direction.destination)
+    // eslint-disable-next-line
+    let currentPoint = new google.maps.LatLng(location.current.geometry)
+    // eslint-disable-next-line
+    let destinationPoint = new google.maps.LatLng(location.destination.geometry)
+    let res = await axios.get('distance/' + currentPoint + '/' + destinationPoint)
 
-    distance.value.text = res.data.rows[0].elements[0].distance.text
-    distance.value.value = res.data.rows[0].elements[0].distance.value
-    duration.value.text = res.data.rows[0].elements[0].duration.text
-    duration.value.value = res.data.rows[0].elements[0].duration.value
+    distance.value.text = res.data.distance_text
+    distance.value.value = res.data.distance
+    duration.value.text = res.data.duration_text
+    duration.value.value = res.data.duration
   }
 
   const calculatePrice = (multiplier, price) => {
