@@ -11,6 +11,17 @@ services:
     volumes:
       - db_home:/var/lib/postgresql/data
 
+  osrm:
+    image: osrm/osrm-backend
+    container_name: osrm
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - 8282:5000
+    volumes:
+      - ./backend/data:/data
+    command: "osrm-routed --algorithm mld /data/vietnam-latest.osrm"
   # app:
   #   image: pygobe:1
   #   container_name: pygobe_app
