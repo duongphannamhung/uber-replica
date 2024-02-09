@@ -29,62 +29,21 @@
       <div class="w-full text-center border-t-2 p-1.5 text-gray-700 text-lg font-semibold">
         Distance - {{ distance.text }}
       </div>
-
       <div class="scrollSection">
-
-        <div class="bg-custom-gray">
-          <div class="flex items-center px-4 py-5">
-            <img width="75" src="img/uber/ride.png">
+        <div 
+          v-for="(item, index) in items" 
+          :key="index" 
+          :style="{ backgroundColor: selectedItemIndex === index ? 'rgb(237, 237, 237)' : 'white' }" 
+          @click="selectItem(index)" class="flex items-center px-4 py-5">
+            <img width="75" :src="item.image">
             <div class="w-full ml-3">
               <div class="flex items-center justify-between">
-                <div class="text-2xl mb-1">UrepCar</div>
-                <div class="text-xl">{{ calculatePrice(1.36, distance.value) }}</div>
+                <div class="text-2xl mb-1">{{ item.name }}</div>
+                <div class="text-xl">{{ calculatePrice(item.priceMultiplier, distance.value) }}</div>
               </div>
-              <div class="text-gray-500">4-seater</div>
-            </div>
-          </div>
+              <div class="text-gray-500">{{ item.description }}</div>
+            </div> 
         </div>
-
-        <div>
-          <div class="flex items-center px-4 py-5">
-            <img width="75" src="img/uber/bike.png">
-            <div class="w-full ml-3">
-              <div class="flex items-center justify-between">
-                <div class="text-2xl mb-1">UrepBike</div>
-                <div class="text-xl">{{ calculatePrice(0.75, distance.value) }}</div>
-              </div>
-              <div class="text-gray-500">Motor scooter</div>
-            </div>
-          </div> 
-        </div>
-
-        <div>
-          <div class="flex items-center px-4 py-5">
-            <img width="75" src="img/uber/uberxl.png">
-            <div class="w-full ml-3">
-              <div class="flex items-center justify-between">
-                <div class="text-2xl mb-1">UrepCar 7</div>
-                <div class="text-xl">{{ calculatePrice(1.51, distance.value) }}</div>
-              </div>
-              <div class="text-gray-500">7-seater</div>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div class="flex items-center px-4 py-5">
-            <!-- <button @click="chooseDiv('UberXL')" -->
-            <img width="75" src="img/uber/comfort.png">
-            <div class="w-full ml-3">
-              <div class="flex items-center justify-between">
-                <div class="text-2xl mb-1">UrepCar Plus</div>
-                <div class="text-xl">{{ calculatePrice(1.73, distance.value) }}</div>
-              </div>
-              <div class="text-gray-500">Professional service</div>
-            </div>
-          </div>
-        </div>
-
       </div>
 
       <div 
@@ -113,7 +72,7 @@
             w-full
           "
         >
-          Confirm UberX
+          Book
         </button>
       </div>
 
@@ -131,6 +90,40 @@
   // import { useTripStore } from '@/stores/trip'
 
   // import mapStyles from '../mapStyles'
+
+  // const backgroundColor = ref({selected:'gray', unselected:'white'});
+  const selectedItemIndex = ref(0);
+
+  const items = [
+    {
+      name: 'UrepCar',
+      description: '4-seater',
+      priceMultiplier: 1.36,
+      image: 'img/uber/car-4.png'
+    },
+    {
+      name: 'UrepBike',
+      description: 'Motor scooter',
+      priceMultiplier: 0.75,
+      image: 'img/uber/bike.png'
+    },
+    {
+      name: 'UrepCar 7',
+      description: '7-seater',
+      priceMultiplier: 1.51,
+      image: 'img/uber/uberxl.png'
+    },
+    {
+      name: 'UrepCar Plus',
+      description: 'Professional service',
+      priceMultiplier: 1.73,
+      image: 'img/uber/comfort.png'
+    }
+  ];
+
+  const selectItem = (index) => {
+    selectedItemIndex.value = index;
+  }
 
   const router = useRouter()
   const location = useLocationStore()
@@ -252,7 +245,7 @@
 
   #VehicleSelection {
     .scrollSection {
-      height: calc(50vh - 120px); 
+      height: calc(56.5vh - 100px); 
       position: absolute; 
       overflow-y: auto; 
       width: 100%
