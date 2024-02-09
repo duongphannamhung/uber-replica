@@ -34,19 +34,6 @@
 
         <div class="bg-custom-gray">
           <div class="flex items-center px-4 py-5">
-            <img width="75" src="img/uber/bike.png">
-            <div class="w-full ml-3">
-              <div class="flex items-center justify-between">
-                <div class="text-2xl mb-1">UrepBike</div>
-                <div class="text-xl">{{ calculatePrice(0.75, distance.value) }}</div>
-              </div>
-              <div class="text-gray-500">Motor scooter</div>
-            </div>
-          </div> 
-        </div>
-
-        <div>
-          <div class="flex items-center px-4 py-5">
             <img width="75" src="img/uber/ride.png">
             <div class="w-full ml-3">
               <div class="flex items-center justify-between">
@@ -56,6 +43,19 @@
               <div class="text-gray-500">4-seater</div>
             </div>
           </div>
+        </div>
+
+        <div>
+          <div class="flex items-center px-4 py-5">
+            <img width="75" src="img/uber/bike.png">
+            <div class="w-full ml-3">
+              <div class="flex items-center justify-between">
+                <div class="text-2xl mb-1">UrepBike</div>
+                <div class="text-xl">{{ calculatePrice(0.75, distance.value) }}</div>
+              </div>
+              <div class="text-gray-500">Motor scooter</div>
+            </div>
+          </div> 
         </div>
 
         <div>
