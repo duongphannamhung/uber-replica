@@ -1,29 +1,46 @@
 package api
 
 import (
+	"log"
 	db "uber-replica/db/sqlc"
+	"uber-replica/token"
+	"uber-replica/util"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 type Server struct {
-	store  *db.Store
-	router *gin.Engine
+	config     util.Config
+	store      db.Store
+	tokenMaker token.Maker
+	router     *gin.Engine
 }
 
-func NewServer(store *db.Store) *Server {
-	server := &Server{store: store}
-	router := gin.Default()
-	router.Use(cors.Default())
+func NewServer(config util.Config, store db.Store) (*Server, error) {
+	tokenMaker, err := token.NewPasetoMaker(config.TokenSymmetricKey)
+	if err != nil {
+		log.Fatal("cannot create token maker: ", err)
+	}
 
-	router.GET("/api/distance/:departure/:destination", server.getDistance)
-	// router.POST("/accounts", server.createAccount)
-	// router.GET("/accounts/:id", server.getAccount)
-	// router.GET("/accounts", server.listAccount)
+	server := &Server{config: config, store: store, tokenMaker: tokenMaker}
+	router := gin.Default()
+	cors_config := cors.DefaultConfig()
+	cors_config.AllowOrigins = []string{"http://localhost:8080"}
+	cors_config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization", "Access-Control-Allow-Headers"}
+	// config.AllowAllOrigins = true
+
+	router.Use(cors.New(cors_config))
+
+	router.POST("/api/login-phone", server.loginPhone)
+	router.POST("/api/login-phone/verify", server.verifyLoginPhone)
+
+	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
+	authRoutes.GET("/api/auth", server.authUser)
+	authRoutes.GET("/api/distance/:departure/:destination", server.getDistance)
 
 	server.router = router
-	return server
+	return server, nil
 }
 
 // Start runs the HTTP server on a specific address

@@ -244,7 +244,11 @@
     let currentPoint = new google.maps.LatLng(location.current.geometry)
     // eslint-disable-next-line
     let destinationPoint = new google.maps.LatLng(location.destination.geometry)
-    let res = await axios.get('distance/' + currentPoint + '/' + destinationPoint)
+    let res = await axios.get('distance/' + currentPoint + '/' + destinationPoint, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    })
 
     distance.value.text = res.data.distance_text
     distance.value.value = res.data.distance
