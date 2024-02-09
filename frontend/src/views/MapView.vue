@@ -58,10 +58,9 @@
           absolute 
           bottom-0 
           shadow-inner
-        "
+        " @click="handleConfirmTrip()"
       >
-        <button 
-          @click="handleConfirmTrip"
+        <button  
           class="
             bg-black 
             text-2xl 
@@ -228,6 +227,30 @@
     }
     return result + ' đ'
   }
+
+  const handleConfirmTrip = () => {
+    let tripRequest = {
+      vehicle: items[selectedItemIndex.value],
+      // eslint-disable-next-line
+      currentPoint : google.maps.LatLng(location.current.geometry),
+      // eslint-disable-next-line
+      destinationPoint : google.maps.LatLng(location.destination.geometry),
+      destinationName: location.destination.name,
+    }
+    if (items[selectedItemIndex.value].name == "UrepBike") {
+      axios.post('/trip/bike', tripRequest)
+        .then((response) => {
+          console.log(response.data)
+          // router.push({
+          //   name : 'finding-driver'
+          // })
+        })
+        .catch((error) => {
+          console.error(error)
+          alert(error.response.data.message)
+        })
+    }
+  }
 </script>
 
 <style lang="scss">
@@ -245,7 +268,7 @@
 
   #VehicleSelection {
     .scrollSection {
-      height: calc(56.5vh - 100px); 
+      height: calc(56.6vh - 90px); 
       position: absolute; 
       overflow-y: auto; 
       width: 100%
