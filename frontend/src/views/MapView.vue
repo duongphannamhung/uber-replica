@@ -34,26 +34,26 @@
 
         <div class="bg-custom-gray">
           <div class="flex items-center px-4 py-5">
-            <img width="75" src="img/uber/ride.png">
+            <img width="75" src="img/uber/bike.png">
             <div class="w-full ml-3">
               <div class="flex items-center justify-between">
-                <div class="text-2xl mb-1">UberX</div>
-                <div class="text-xl">{{ calculatePrice(1, distance.value) }}</div>
+                <div class="text-2xl mb-1">UrepBike</div>
+                <div class="text-xl">{{ calculatePrice(0.75, distance.value) }}</div>
               </div>
-              <div class="text-gray-500">{{ duration.text }}</div>
+              <div class="text-gray-500">Motor scooter</div>
             </div>
-          </div>
+          </div> 
         </div>
 
         <div>
           <div class="flex items-center px-4 py-5">
-            <img width="75" src="img/uber/comfort.png">
+            <img width="75" src="img/uber/ride.png">
             <div class="w-full ml-3">
               <div class="flex items-center justify-between">
-                <div class="text-2xl mb-1">Comfort</div>
-                <div class="text-xl">£{{ calculatePrice(1.25, distance.value) }}</div>
+                <div class="text-2xl mb-1">UrepCar</div>
+                <div class="text-xl">{{ calculatePrice(1.36, distance.value) }}</div>
               </div>
-              <div class="text-gray-500">{{ duration.text }}</div>
+              <div class="text-gray-500">4-seater</div>
             </div>
           </div>
         </div>
@@ -63,10 +63,24 @@
             <img width="75" src="img/uber/uberxl.png">
             <div class="w-full ml-3">
               <div class="flex items-center justify-between">
-                <div class="text-2xl mb-1">UberXL</div>
-                <div class="text-xl">£{{ calculatePrice(1.5, distance.value) }}</div>
+                <div class="text-2xl mb-1">UrepCar 7</div>
+                <div class="text-xl">{{ calculatePrice(1.51, distance.value) }}</div>
               </div>
-              <div class="text-gray-500">{{ duration.text }}</div>
+              <div class="text-gray-500">7-seater</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center px-4 py-5">
+            <!-- <button @click="chooseDiv('UberXL')" -->
+            <img width="75" src="img/uber/comfort.png">
+            <div class="w-full ml-3">
+              <div class="flex items-center justify-between">
+                <div class="text-2xl mb-1">UrepCar Plus</div>
+                <div class="text-xl">{{ calculatePrice(1.73, distance.value) }}</div>
+              </div>
+              <div class="text-gray-500">Professional service</div>
             </div>
           </div>
         </div>
@@ -88,6 +102,7 @@
         "
       >
         <button 
+          @click="handleConfirmTrip"
           class="
             bg-black 
             text-2xl 
@@ -182,63 +197,6 @@
     // direction.destination = ''
   }
 
-  // const initMap = () => {
-
-  //   const directionsService = new window.google.maps.DirectionsService()
-  //   const directionsRenderer = new window.google.maps.DirectionsRenderer()
-
-  //   directionsRenderer.setOptions({
-  //     polylineOptions: {
-  //       strokeColor: '#212121',
-  //       strokeWeight: 6
-  //     }
-  //   });
-
-  //   const map = new window.google.maps.Map(document.getElementById("map"), {
-  //       zoom: 4,
-  //       minZoom: 3,
-  //       maxZoom: 17,
-  //       fullscreenControl: false,
-  //       zoomControl: false,
-  //       streetViewControl: false,
-  //       mapTypeControl: false,
-        
-  //       // https://snazzymaps.com/editor/customize/15
-  //       styles: mapStyles()
-  //     });
-
-  //     if (direction.pickup && direction.destination) { 
-  //       getDirections(map, directionsRenderer, directionsService)
-  //       getDistance()
-  //     }
-
-  //     return map
-  // }
-
-  // const getDirections = (map, directionsRenderer, directionsService) => {
-    
-  //   directionsRenderer.setMap(map)
-
-  //   const request = {
-  //     origin: direction.pickup,
-  //     destination: direction.destination,
-  //     optimizeWaypoints: true, // set to true if you want google to determine the shortest route or false to use the order specified.
-  //     travelMode: 'DRIVING'
-  //   }
-
-  //   directionsService.route(request, function (result, status) {
-  //     if (status === 'OK') {
-
-  //       latLng.value.start.lat = result.routes[0].legs[0].start_location.lat()
-  //       latLng.value.start.lng = result.routes[0].legs[0].start_location.lng()
-  //       latLng.value.end.lat = result.routes[0].legs[0].end_location.lat()
-  //       latLng.value.end.lng = result.routes[0].legs[0].end_location.lng()
-
-  //       directionsRenderer.setDirections(result)
-  //     }
-  //   })
-  // }
-
   const getDistance = async () => {
     // eslint-disable-next-line
     let currentPoint = new google.maps.LatLng(location.current.geometry)
@@ -256,9 +214,26 @@
     duration.value.value = res.data.duration
   }
 
-  const calculatePrice = (multiplier, price) => {
-    let res = (price / 900) * multiplier
-    return res.toFixed(2)
+  const calculatePrice = (multiplier, distance) => {
+    let res = (distance * 9000) * multiplier / 1000000
+    if (res) {
+      return convertPriceToVND(res.toFixed(0) * 1000)
+    }
+  }
+  
+  const convertPriceToVND = (price) => {
+    let k = 0
+    price = price.toString()
+    let result = ''
+    for (let i = price.length - 1; i >= 0; i--) {
+      if (k % 3 == 0 && k != 0) {
+        result = price[i] + '.' + result
+      } else {
+        result = price[i] + result
+      }
+      k++
+    }
+    return result + ' đ'
   }
 </script>
 
