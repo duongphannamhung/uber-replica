@@ -18,6 +18,36 @@ const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
 const app = createApp(App)
+// const app = createApp(App, {
+//     data() {
+//         return {
+//             status: true,
+//             data: [],
+//             interval:null
+//         };
+//     },
+//     methods: {
+//         callEverySecond() {
+//             console.log("called every 5 seconds")
+//             // axios.get("https://randomuser.me/api/?results=5").then(
+//             // (response) =>
+//             //     // console.log(response)
+//             //     (this.data = response.data.results)
+//             // )
+//           }
+//     },
+//     mounted() {
+//         this.callEverySecond()
+//     },
+//     created() {
+//         this.interval = setInterval(() => {
+//             this.callEverySecond()
+//         }, 3000)
+//     },
+//     beforeUnmount() {
+//         clearInterval(this.intervalId)
+//     }
+// })
 
 app.use(router)
 app.use(pinia)

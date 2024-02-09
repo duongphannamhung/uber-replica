@@ -8,7 +8,7 @@
     >
       <ArrowLeftIcon :size="40" />
     </div>
-
+    
     <!-- <div id="map" > -->
     <GMapMap v-if="location.destination.name !== ''" 
         :zoom="4" :center="location.destination.geometry"
