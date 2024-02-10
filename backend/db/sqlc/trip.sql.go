@@ -12,20 +12,36 @@ import (
 const createTrip = `-- name: CreateTrip :one
 INSERT INTO trips (
     user_id,
-    driver_id
+    driver_id,
+    origin_latitude,
+    origin_longitude,
+    destination_latitude,
+    destination_longitude,
+    destination_name
 ) VALUES (
-    $1, $2
+    $1, NULL, $2, $3, $4, $5, $6
 )
-RETURNING id, user_id, driver_id, is_started, is_completed, origin, destination, destination_name, driver_location, created_at
+RETURNING id, user_id, driver_id, is_started, is_completed, origin_latitude, origin_longitude, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, created_at
 `
 
 type CreateTripParams struct {
-	UserID   int64 `json:"user_id"`
-	DriverID int64 `json:"driver_id"`
+	UserID               int64   `json:"user_id"`
+	OriginLatitude       float64 `json:"origin_latitude"`
+	OriginLongitude      float64 `json:"origin_longitude"`
+	DestinationLatitude  float64 `json:"destination_latitude"`
+	DestinationLongitude float64 `json:"destination_longitude"`
+	DestinationName      string  `json:"destination_name"`
 }
 
 func (q *Queries) CreateTrip(ctx context.Context, arg CreateTripParams) (Trip, error) {
-	row := q.db.QueryRowContext(ctx, createTrip, arg.UserID, arg.DriverID)
+	row := q.db.QueryRowContext(ctx, createTrip,
+		arg.UserID,
+		arg.OriginLatitude,
+		arg.OriginLongitude,
+		arg.DestinationLatitude,
+		arg.DestinationLongitude,
+		arg.DestinationName,
+	)
 	var i Trip
 	err := row.Scan(
 		&i.ID,
@@ -33,10 +49,13 @@ func (q *Queries) CreateTrip(ctx context.Context, arg CreateTripParams) (Trip, e
 		&i.DriverID,
 		&i.IsStarted,
 		&i.IsCompleted,
-		&i.Origin,
-		&i.Destination,
+		&i.OriginLatitude,
+		&i.OriginLongitude,
+		&i.DestinationLatitude,
+		&i.DestinationLongitude,
 		&i.DestinationName,
-		&i.DriverLocation,
+		&i.DriverLocationLatitude,
+		&i.DriverLocationLongitude,
 		&i.CreatedAt,
 	)
 	return i, err
@@ -59,7 +78,7 @@ func (q *Queries) DeleteTrip(ctx context.Context, id int64) error {
 }
 
 const getTrip = `-- name: GetTrip :one
-SELECT id, user_id, driver_id, is_started, is_completed, origin, destination, destination_name, driver_location, created_at FROM trips
+SELECT id, user_id, driver_id, is_started, is_completed, origin_latitude, origin_longitude, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, created_at FROM trips
 WHERE id = $1 LIMIT 1
 `
 
@@ -72,17 +91,20 @@ func (q *Queries) GetTrip(ctx context.Context, id int64) (Trip, error) {
 		&i.DriverID,
 		&i.IsStarted,
 		&i.IsCompleted,
-		&i.Origin,
-		&i.Destination,
+		&i.OriginLatitude,
+		&i.OriginLongitude,
+		&i.DestinationLatitude,
+		&i.DestinationLongitude,
 		&i.DestinationName,
-		&i.DriverLocation,
+		&i.DriverLocationLatitude,
+		&i.DriverLocationLongitude,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const listTrips = `-- name: ListTrips :many
-SELECT id, user_id, driver_id, is_started, is_completed, origin, destination, destination_name, driver_location, created_at FROM trips
+SELECT id, user_id, driver_id, is_started, is_completed, origin_latitude, origin_longitude, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, created_at FROM trips
 ORDER BY id
 LIMIT $1
 OFFSET $2
@@ -108,10 +130,13 @@ func (q *Queries) ListTrips(ctx context.Context, arg ListTripsParams) ([]Trip, e
 			&i.DriverID,
 			&i.IsStarted,
 			&i.IsCompleted,
-			&i.Origin,
-			&i.Destination,
+			&i.OriginLatitude,
+			&i.OriginLongitude,
+			&i.DestinationLatitude,
+			&i.DestinationLongitude,
 			&i.DestinationName,
-			&i.DriverLocation,
+			&i.DriverLocationLatitude,
+			&i.DriverLocationLongitude,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err

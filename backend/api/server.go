@@ -38,6 +38,7 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 	authRoutes.GET("/api/auth", server.authUser)
 	authRoutes.GET("/api/distance/:departure/:destination", server.getDistance)
+	authRoutes.POST("/api/trip/bike", server.createTripBike)
 
 	server.router = router
 	return server, nil

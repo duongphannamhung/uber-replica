@@ -6,19 +6,6 @@ CREATE TABLE "users" (
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
-CREATE TABLE "trips" (
-  "id" bigserial PRIMARY KEY,
-  "user_id" bigserial NOT NULL,
-  "driver_id" bigserial NOT NULL,
-  "is_started" boolean NOT NULL DEFAULT (false),
-  "is_completed" boolean NOT NULL DEFAULT (false),
-  "origin" json,
-  "destination" json,
-  "destination_name" text,
-  "driver_location" json,
-  "created_at" timestamptz NOT NULL DEFAULT (now())
-);
-
 CREATE TABLE "drivers" (
   "id" bigserial PRIMARY KEY,
   "year" integer,
@@ -27,6 +14,22 @@ CREATE TABLE "drivers" (
   "color" text,
   "license_plate" text,
   "status" integer NOT NULL DEFAULT (0),
+  "created_at" timestamptz NOT NULL DEFAULT (now())
+);
+
+CREATE TABLE "trips" (
+  "id" bigserial PRIMARY KEY,
+  "user_id" bigserial NOT NULL,
+  "driver_id" integer references drivers(id),
+  "is_started" boolean NOT NULL DEFAULT (false),
+  "is_completed" boolean NOT NULL DEFAULT (false),
+  "origin_latitude" float NOT NULL,
+  "origin_longitude" float NOT NULL,
+  "destination_latitude" float NOT NULL,
+  "destination_longitude" float NOT NULL,
+  "destination_name" text NOT NULL,
+  "driver_location_latitude" float,
+  "driver_location_longitude" float,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
@@ -41,4 +44,4 @@ CREATE INDEX ON "trips" ("user_id", "driver_id");
 
 ALTER TABLE "trips" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
-ALTER TABLE "trips" ADD FOREIGN KEY ("driver_id") REFERENCES "drivers" ("id");
+-- ALTER TABLE "trips" ADD FOREIGN KEY ("driver_id") REFERENCES "drivers" ("id");

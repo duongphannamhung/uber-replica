@@ -1,9 +1,14 @@
 -- name: CreateTrip :one
 INSERT INTO trips (
     user_id,
-    driver_id
+    driver_id,
+    origin_latitude,
+    origin_longitude,
+    destination_latitude,
+    destination_longitude,
+    destination_name
 ) VALUES (
-    $1, $2
+    $1, NULL, $2, $3, $4, $5, $6
 )
 RETURNING *;
 
