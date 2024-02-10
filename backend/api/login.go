@@ -17,7 +17,7 @@ type LoginPhoneRequest struct {
 }
 
 type userResponse struct {
-	ID        int64     `json:"id"`
+	ID        int64     `json:"id" binding:"required"`
 	Phone     string    `json:"phone" binding:"required"`
 	CreatedAt time.Time `json:"created_at"`
 }

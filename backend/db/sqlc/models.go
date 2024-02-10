@@ -7,8 +7,6 @@ package db
 import (
 	"database/sql"
 	"time"
-
-	"github.com/sqlc-dev/pqtype"
 )
 
 type Driver struct {
@@ -22,17 +20,30 @@ type Driver struct {
 	CreatedAt    time.Time      `json:"created_at"`
 }
 
+type Engagement struct {
+	ID         int64         `json:"id"`
+	DriverID   sql.NullInt64 `json:"driver_id"`
+	Status     int32         `json:"status"`
+	Latitude   float64       `json:"latitude"`
+	Longitude  float64       `json:"longitude"`
+	GeofenceID int32         `json:"geofence_id"`
+	CreatedAt  time.Time     `json:"created_at"`
+}
+
 type Trip struct {
-	ID              int64                 `json:"id"`
-	UserID          int64                 `json:"user_id"`
-	DriverID        int64                 `json:"driver_id"`
-	IsStarted       bool                  `json:"is_started"`
-	IsCompleted     bool                  `json:"is_completed"`
-	Origin          pqtype.NullRawMessage `json:"origin"`
-	Destination     pqtype.NullRawMessage `json:"destination"`
-	DestinationName sql.NullString        `json:"destination_name"`
-	DriverLocation  pqtype.NullRawMessage `json:"driver_location"`
-	CreatedAt       time.Time             `json:"created_at"`
+	ID                      int64           `json:"id"`
+	UserID                  int64           `json:"user_id"`
+	DriverID                sql.NullInt32   `json:"driver_id"`
+	IsStarted               bool            `json:"is_started"`
+	IsCompleted             bool            `json:"is_completed"`
+	OriginLatitude          float64         `json:"origin_latitude"`
+	OriginLongitude         float64         `json:"origin_longitude"`
+	DestinationLatitude     float64         `json:"destination_latitude"`
+	DestinationLongitude    float64         `json:"destination_longitude"`
+	DestinationName         string          `json:"destination_name"`
+	DriverLocationLatitude  sql.NullFloat64 `json:"driver_location_latitude"`
+	DriverLocationLongitude sql.NullFloat64 `json:"driver_location_longitude"`
+	CreatedAt               time.Time       `json:"created_at"`
 }
 
 type User struct {

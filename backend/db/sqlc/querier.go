@@ -10,6 +10,7 @@ import (
 
 type Querier interface {
 	CreateDriver(ctx context.Context, arg CreateDriverParams) (Driver, error)
+	CreateEngagement(ctx context.Context, arg CreateEngagementParams) (Engagement, error)
 	CreateTrip(ctx context.Context, arg CreateTripParams) (Trip, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	// -- name: UpdateDriver :one
@@ -18,6 +19,7 @@ type Querier interface {
 	// WHERE id = $1
 	// RETURNING *;
 	DeleteDriver(ctx context.Context, id int64) error
+	DeleteEngagement(ctx context.Context, id int64) error
 	// -- name: UpdateTrip :one
 	// UPDATE users
 	// SET name = $2
@@ -26,11 +28,15 @@ type Querier interface {
 	DeleteTrip(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, id int64) error
 	GetDriver(ctx context.Context, id int64) (Driver, error)
+	GetEngagement(ctx context.Context, id int64) (Engagement, error)
 	GetTrip(ctx context.Context, id int64) (Trip, error)
 	GetUser(ctx context.Context, id int64) (User, error)
 	GetUserByPhone(ctx context.Context, phone string) (User, error)
 	ListDrivers(ctx context.Context, arg ListDriversParams) ([]Driver, error)
+	ListEngagements(ctx context.Context, arg ListEngagementsParams) ([]Engagement, error)
 	ListTrips(ctx context.Context, arg ListTripsParams) ([]Trip, error)
+	UpdateEngagementLatLng(ctx context.Context, arg UpdateEngagementLatLngParams) (Engagement, error)
+	UpdateEngagementStatus(ctx context.Context, arg UpdateEngagementStatusParams) (Engagement, error)
 	UpdateUserLoginCode(ctx context.Context, arg UpdateUserLoginCodeParams) (User, error)
 }
 
