@@ -228,17 +228,24 @@
     return result + ' đ'
   }
 
-  const handleConfirmTrip = () => {
+  const handleConfirmTrip = async () => {
+    let vehicleName = items[selectedItemIndex.value].name;
     let tripRequest = {
-      vehicle: items[selectedItemIndex.value],
+      user_id: localStorage.getItem('current_user_id'),
+      user_phone: localStorage.getItem('current_user_phone'),
+      vehicle: vehicleName,
       // eslint-disable-next-line
-      currentPoint : google.maps.LatLng(location.current.geometry),
+      origin_point : new google.maps.LatLng(location.current.geometry),
       // eslint-disable-next-line
-      destinationPoint : google.maps.LatLng(location.destination.geometry),
-      destinationName: location.destination.name,
+      destination_point : new google.maps.LatLng(location.destination.geometry),
+      destination_name: location.destination.name,
     }
-    if (items[selectedItemIndex.value].name == "UrepBike") {
-      axios.post('/trip/bike', tripRequest)
+    if (vehicleName == "UrepBike") {
+      await axios.post('trip/bike', tripRequest, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+    })
         .then((response) => {
           console.log(response.data)
           // router.push({
@@ -248,6 +255,9 @@
         .catch((error) => {
           console.error(error)
           alert(error.response.data.message)
+          router.push({
+            name : 'home'
+          })
         })
     }
   }
@@ -268,7 +278,7 @@
 
   #VehicleSelection {
     .scrollSection {
-      height: calc(56.6vh - 90px); 
+      height: calc(56.6vh - 100px); 
       position: absolute; 
       overflow-y: auto; 
       width: 100%
