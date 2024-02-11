@@ -1,21 +1,33 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import axios from 'axios'
-import HomeView from '../views/HomeView.vue'
+import CusHomeView from '../views/customer/CusHomeView.vue'
 // import DirectionsView from '../views/DirectionsView.vue'
-import LocationView from '../views/LocationView.vue'
-import LoginView from '../views/LoginView.vue'
-import MapView from '../views/MapView.vue'
+import CusLocationView from '../views/customer/CusLocationView.vue'
+import CusLoginView from '../views/customer/CusLoginView.vue'
+import CusMapView from '../views/customer/CusMapView.vue'
+import ChooseAppView from '../views/ChooseAppView.vue'
+import DriverLoginView from '../views/driver/DriverLoginView.vue'
 
 const routes = [
   {
     path: '/',
-    name: 'login',
-    component: LoginView
+    name: 'choose-app',
+    component: ChooseAppView
   },
   {
-    path: '/home',
-    name: 'home',
-    component: HomeView
+    path: '/driver-login',
+    name: 'driver-login',
+    component: DriverLoginView
+  },
+  {
+    path: '/cus-login',
+    name: 'cus-login',
+    component: CusLoginView
+  },
+  {
+    path: '/cus-home',
+    name: 'cus-home',
+    component: CusHomeView
   },
   // {
   //   path: '/directions',
@@ -23,14 +35,14 @@ const routes = [
   //   component: DirectionsView
   // },
   {
-    path: '/map',
-    name: 'map',
-    component: MapView
+    path: '/cus-map',
+    name: 'cus-map',
+    component: CusMapView
   },
   {
-    path: '/location',
-    name: 'location',
-    component: LocationView
+    path: '/cus-location',
+    name: 'cus-location',
+    component: CusLocationView
   },
 ]
 
@@ -41,33 +53,63 @@ const router = createRouter({
 
 // eslint-disable-next-line
 router.beforeEach((to, from) => {
-  if (to.name === 'login') {
+  if (from.name === 'choose-app' || to.name === 'cus-login' || to.name === 'driver-login') {
     return true
   }
 
-  if (!localStorage.getItem('token')) {
-    return {
-      name: 'login'
+  if (from.name === 'cus-login') {
+    if (!localStorage.getItem('cus-token')) {
+      return {
+        name: 'cus-login'
+      }
     }
+  
+    checkTokenAuthenticity()
   }
 
-  checkTokenAuthenticity()
+  if (from.name === 'driver-login') {
+    if (!localStorage.getItem('driver-token')) {
+      return {
+        name: 'driver-login'
+      }
+    }
+  
+    checkDriverTokenAuthenticity()
+  }
 })
 
 const checkTokenAuthenticity = () => {
   // TODO: change this .env
   axios.get('http://localhost:6969/api/auth', {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`
+      Authorization: `Bearer ${localStorage.getItem('cus-token')}`
     }
   })
     // eslint-disable-next-line
     .then((response) => {})
     // eslint-disable-next-line
     .catch((error) => {
-      localStorage.removeItem('token')
+      localStorage.removeItem('cus-token')
       router.push({
-        name: 'login'
+        name: 'cus-login'
+      })
+    })
+}
+
+const checkDriverTokenAuthenticity = () => {
+  // TODO: change this .env
+  axios.get('http://localhost:6969/api/auth', {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('driver-token')}`
+    }
+  })
+    // eslint-disable-next-line
+    .then((response) => {})
+    // eslint-disable-next-line
+    .catch((error) => {
+      localStorage.removeItem('driver-token')
+      router.push({
+        name: 'driver-login'
       })
     })
 }

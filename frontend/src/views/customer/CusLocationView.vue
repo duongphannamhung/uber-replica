@@ -48,7 +48,7 @@ const handleLocationChanged = (e) => {
 const handleSelectLocation = () => {
     if (location.destination.name !== '') {
         router.push({
-            name: 'map'
+            name: 'cus-map'
         })
     }
 }
