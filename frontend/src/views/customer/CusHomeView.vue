@@ -8,7 +8,7 @@
 
       <div class="grid grid-cols-2 gap-3 my-3">
         <ServiceSelectLarge
-          @click="router.push('/location')" 
+          @click="router.push('/cus-location')" 
           text="Ride"
           imageWidth="74"
           image="ride"
@@ -41,7 +41,7 @@
       </div>
 
       <div 
-        @click="router.push('/location')" 
+        @click="router.push('/cus-location')" 
         class="
           w-full 
           bg-custom-color 
@@ -76,7 +76,7 @@
           Home
         </div>
       </div>
-      <div @click="router.push('/location')" class="grid place-items-center">
+      <div @click="router.push('/cus-location')" class="grid place-items-center">
         <MapMarkerIcon :size="30" fillColor="#b3b1b1"/>
         <div class="w-full -mt-1 text-xs text-center text-gray-400 font-semibold">
           Destination

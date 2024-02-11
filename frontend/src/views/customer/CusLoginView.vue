@@ -1,6 +1,6 @@
 <template>
     <div class="pt-16">
-        <h1 class="text-3xl font-semibold mb-4">Nhập số điện thoại của bạn</h1>
+        <h1 class="text-3xl font-semibold mb-4">[Customer] Nhập số điện thoại của bạn</h1>
         <form v-if="!waitingOnVerification" action="#" @submit.prevent="handleLogin">
             <div class="overflow-hidden shadow sm:rounded-md max-w-sm mx-auto text-left">
                 <div class="bg-white px-4 py-5 sm:p-6">
@@ -48,9 +48,9 @@ const credentials = reactive({
 const waitingOnVerification = ref(false)
 
 onMounted(() => {
-    if (localStorage.getItem('token')) {
+    if (localStorage.getItem('cus-token')) {
         router.push({
-            name: 'home'
+            name: 'cus-home'
         })
     }
 })
@@ -81,11 +81,11 @@ const handleVerification = () => {
     axios.post('http://localhost:6969/api/login-phone/verify', getFormattedCredentials())
         .then((response) => {
             console.log(response.data) // auth token // xongxoa
-            localStorage.setItem('token', response.data.access_token)
+            localStorage.setItem('cus-token', response.data.access_token)
             localStorage.setItem('current_user_phone', response.data.user.phone)
             localStorage.setItem('current_user_id', response.data.user.id)
             router.push({
-                name: 'home'
+                name: 'cus-home'
             })
         })
         .catch((error) => {

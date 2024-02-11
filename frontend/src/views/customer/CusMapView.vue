@@ -136,7 +136,7 @@
       // does the user have a location set?
       if (location.destination.name === '') {
           router.push({
-              name: 'location'
+              name: 'cus-location'
           })
       }
       // lets get the users current location
@@ -184,7 +184,7 @@
   // })
 
   const goBack = () => {
-    router.push('/location')
+    router.push('/cus-location')
     // direction.pickup = ''
     // direction.destination = ''
   }
@@ -196,7 +196,7 @@
     let destinationPoint = new google.maps.LatLng(location.destination.geometry)
     let res = await axios.get('distance/' + currentPoint + '/' + destinationPoint, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
+        Authorization: `Bearer ${localStorage.getItem('cus-token')}`
       }
     })
 
@@ -243,7 +243,7 @@
     if (vehicleName == "UrepBike") {
       await axios.post('trip/bike', tripRequest, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${localStorage.getItem('cus-token')}`
         }
     })
         .then((response) => {
@@ -256,7 +256,7 @@
           console.error(error)
           alert(error.response.data.message)
           router.push({
-            name : 'home'
+            name : 'cus-home'
           })
         })
     }
