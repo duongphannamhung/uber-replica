@@ -11,6 +11,9 @@ import (
 
 type Driver struct {
 	ID           int64          `json:"id"`
+	Phone        string         `json:"phone"`
+	Name         sql.NullString `json:"name"`
+	LoginCode    sql.NullString `json:"login_code"`
 	Year         sql.NullInt32  `json:"year"`
 	Make         sql.NullString `json:"make"`
 	Model        sql.NullString `json:"model"`

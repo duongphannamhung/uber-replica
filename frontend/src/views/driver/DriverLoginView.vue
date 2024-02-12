@@ -64,7 +64,7 @@ const getFormattedCredentials = () => {
 
 const handleLogin = () => {
     // TODO: change this to .env
-    axios.post('http://localhost:6969/api/login-phone', getFormattedCredentials())
+    axios.post('http://localhost:6969/api/driver/login-phone', getFormattedCredentials())
         .then((response) => {
             console.log(response.data)
             // waitingOnVerification.value = false
@@ -78,7 +78,7 @@ const handleLogin = () => {
 
 const handleVerification = () => {
     // TODO : change this to .env
-    axios.post('http://localhost:6969/api/login-phone/verify', getFormattedCredentials())
+    axios.post('http://localhost:6969/api/driver/login-phone/verify', getFormattedCredentials())
         .then((response) => {
             console.log(response.data) // auth token // xongxoa
             localStorage.setItem('driver-token', response.data.access_token)

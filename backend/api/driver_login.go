@@ -11,27 +11,27 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type LoginPhoneRequest struct {
+type DriverLoginPhoneRequest struct {
 	Phone    string `json:"phone" binding:"required"`
 	LoginOTP string `json:"login_code" binding:"required"`
 }
 
-type userResponse struct {
+type DriverResponse struct {
 	ID        int64     `json:"id" binding:"required"`
 	Phone     string    `json:"phone" binding:"required"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
-type LoginPhoneResponse struct {
-	AccessToken string       `json:"access_token"`
-	User        userResponse `json:"user"`
+type DriverLoginPhoneResponse struct {
+	AccessToken string         `json:"access_token"`
+	Driver      DriverResponse `json:"driver"`
 }
 
-func newUserResponse(user db.User) userResponse {
-	return userResponse{
-		ID:        user.ID,
-		Phone:     user.Phone,
-		CreatedAt: user.CreatedAt,
+func newDriverResponse(driver db.Driver) DriverResponse {
+	return DriverResponse{
+		ID:        driver.ID,
+		Phone:     driver.Phone,
+		CreatedAt: driver.CreatedAt,
 	}
 }
 
@@ -40,7 +40,7 @@ func newUserResponse(user db.User) userResponse {
 // 	Token string `json:"token" binding:"required"`
 // }
 
-func (server *Server) loginPhone(ctx *gin.Context) {
+func (server *Server) driverLoginPhone(ctx *gin.Context) {
 	val, err := ctx.GetRawData()
 	if err != nil {
 		log.Fatal("Error getting raw data: ", err)
@@ -83,7 +83,7 @@ func (server *Server) loginPhone(ctx *gin.Context) {
 	return
 }
 
-func (server *Server) verifyLoginPhone(ctx *gin.Context) {
+func (server *Server) verifyDriverLoginPhone(ctx *gin.Context) {
 	val, err := ctx.GetRawData()
 	if err != nil {
 		log.Fatal("Error getting raw data: ", err)
@@ -123,6 +123,6 @@ func (server *Server) verifyLoginPhone(ctx *gin.Context) {
 	return
 }
 
-func (server *Server) authUser(ctx *gin.Context) {
+func (server *Server) authDriver(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, "Ok")
 }

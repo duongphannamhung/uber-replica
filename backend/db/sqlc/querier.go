@@ -9,10 +9,10 @@ import (
 )
 
 type Querier interface {
-	CreateDriver(ctx context.Context, arg CreateDriverParams) (Driver, error)
+	CreateDriver(ctx context.Context, phone string) (Driver, error)
 	CreateEngagement(ctx context.Context, arg CreateEngagementParams) (Engagement, error)
 	CreateTrip(ctx context.Context, arg CreateTripParams) (Trip, error)
-	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	CreateUser(ctx context.Context, phone string) (User, error)
 	// -- name: UpdateDriver :one
 	// UPDATE drivers
 	// SET name = $2

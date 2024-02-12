@@ -98,7 +98,7 @@ const checkTokenAuthenticity = () => {
 
 const checkDriverTokenAuthenticity = () => {
   // TODO: change this .env
-  axios.get('http://localhost:6969/api/auth', {
+  axios.get('http://localhost:6969/api/driver/auth', {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('driver-token')}`
     }
