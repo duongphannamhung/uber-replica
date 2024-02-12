@@ -1,12 +1,8 @@
 -- name: CreateDriver :one
 INSERT INTO drivers (
-    year,
-    make,
-    model,
-    color,
-    license_plate
+    phone
 ) VALUES (
-    $1, $2, $3, $4, $5
+    $1
 )
 RETURNING *;
 

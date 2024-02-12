@@ -8,6 +8,9 @@ CREATE TABLE "users" (
 
 CREATE TABLE "drivers" (
   "id" bigserial PRIMARY KEY,
+  "phone" varchar UNIQUE NOT NULL,
+  "name" varchar,
+  "login_code" varchar,
   "year" integer,
   "make" text,
   "model" text,

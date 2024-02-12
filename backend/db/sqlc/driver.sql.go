@@ -7,41 +7,25 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createDriver = `-- name: CreateDriver :one
 INSERT INTO drivers (
-    year,
-    make,
-    model,
-    color,
-    license_plate
+    phone
 ) VALUES (
-    $1, $2, $3, $4, $5
+    $1
 )
-RETURNING id, year, make, model, color, license_plate, status, created_at
+RETURNING id, phone, name, login_code, year, make, model, color, license_plate, status, created_at
 `
 
-type CreateDriverParams struct {
-	Year         sql.NullInt32  `json:"year"`
-	Make         sql.NullString `json:"make"`
-	Model        sql.NullString `json:"model"`
-	Color        sql.NullString `json:"color"`
-	LicensePlate sql.NullString `json:"license_plate"`
-}
-
-func (q *Queries) CreateDriver(ctx context.Context, arg CreateDriverParams) (Driver, error) {
-	row := q.db.QueryRowContext(ctx, createDriver,
-		arg.Year,
-		arg.Make,
-		arg.Model,
-		arg.Color,
-		arg.LicensePlate,
-	)
+func (q *Queries) CreateDriver(ctx context.Context, phone string) (Driver, error) {
+	row := q.db.QueryRowContext(ctx, createDriver, phone)
 	var i Driver
 	err := row.Scan(
 		&i.ID,
+		&i.Phone,
+		&i.Name,
+		&i.LoginCode,
 		&i.Year,
 		&i.Make,
 		&i.Model,
@@ -70,7 +54,7 @@ func (q *Queries) DeleteDriver(ctx context.Context, id int64) error {
 }
 
 const getDriver = `-- name: GetDriver :one
-SELECT id, year, make, model, color, license_plate, status, created_at FROM drivers
+SELECT id, phone, name, login_code, year, make, model, color, license_plate, status, created_at FROM drivers
 WHERE id = $1 LIMIT 1
 `
 
@@ -79,6 +63,9 @@ func (q *Queries) GetDriver(ctx context.Context, id int64) (Driver, error) {
 	var i Driver
 	err := row.Scan(
 		&i.ID,
+		&i.Phone,
+		&i.Name,
+		&i.LoginCode,
 		&i.Year,
 		&i.Make,
 		&i.Model,
@@ -91,7 +78,7 @@ func (q *Queries) GetDriver(ctx context.Context, id int64) (Driver, error) {
 }
 
 const listDrivers = `-- name: ListDrivers :many
-SELECT id, year, make, model, color, license_plate, status, created_at FROM drivers
+SELECT id, phone, name, login_code, year, make, model, color, license_plate, status, created_at FROM drivers
 ORDER BY id
 LIMIT $1
 OFFSET $2
@@ -113,6 +100,9 @@ func (q *Queries) ListDrivers(ctx context.Context, arg ListDriversParams) ([]Dri
 		var i Driver
 		if err := rows.Scan(
 			&i.ID,
+			&i.Phone,
+			&i.Name,
+			&i.LoginCode,
 			&i.Year,
 			&i.Make,
 			&i.Model,
