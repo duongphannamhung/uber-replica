@@ -44,6 +44,7 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 	router.POST("/api/driver/login-phone/verify", server.verifyDriverLoginPhone)
 	authDriverRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 	authDriverRoutes.GET("/api/driver/auth", server.authDriver)
+	authDriverRoutes.POST("/api/driver/update-engagement", server.driverUpdateEngagement)
 
 	server.router = router
 	return server, nil

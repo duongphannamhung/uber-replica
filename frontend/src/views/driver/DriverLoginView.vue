@@ -82,8 +82,8 @@ const handleVerification = () => {
         .then((response) => {
             console.log(response.data) // auth token // xongxoa
             localStorage.setItem('driver-token', response.data.access_token)
-            localStorage.setItem('current_user_phone', response.data.user.phone)
-            localStorage.setItem('current_user_id', response.data.user.id)
+            localStorage.setItem('current_driver_phone', response.data.user.phone)
+            localStorage.setItem('current_driver_id', response.data.user.id)
             router.push({
                 name: 'driver-home'
             })

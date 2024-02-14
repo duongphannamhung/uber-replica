@@ -47,7 +47,7 @@
 </template>
   
   <script setup>
-    // import axios from 'axios';
+    import axios from 'axios';
     import { onMounted, ref } from 'vue'
     import DriverToggle from '@/components/DriverToggle.vue';
     import { useLocationStore } from '@/store/location'
@@ -56,11 +56,45 @@
   
     const checked = ref(false)
     const location = useLocationStore()
+    let intervalId = null;
 
     const toggle = () => {
         checked.value = !checked.value;
-        console.log(checked.value)
+        if (checked.value) {
+          intervalId = setInterval(updateEngagement, 1000)
+          console.log(`intervalId ${intervalId}`)
+        }
+        else if (!checked.value) {
+          clearInterval(intervalId);
+          intervalId = null;
+        }
     }
+
+    const getEngagement = () => {
+      return {
+        driver_id: localStorage.getItem('current_driver_id'),
+        driver_phone: localStorage.getItem('current_driver_phone'),
+        status: 0,
+        lat : location.current.geometry.lat,
+        lng : location.current.geometry.lng,
+        geo_id : 1 // update geo_id later
+      }
+    }
+
+    const updateEngagement = async () => {
+      await axios.post('http://localhost:6969/api/driver/update-engagement', getEngagement(), {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('driver-token')}`
+        }
+    })
+      .then((response) => {
+          console.log(response.data)
+      })
+      .catch((error) => {
+          console.error(error)
+          alert(error.response.data.message)
+      })
+  }
 
     onMounted(async () => {
       await location.updateCurrentLocation()
