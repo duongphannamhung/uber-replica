@@ -7,6 +7,7 @@ import CusLoginView from '../views/customer/CusLoginView.vue'
 import CusMapView from '../views/customer/CusMapView.vue'
 import ChooseAppView from '../views/ChooseAppView.vue'
 import DriverLoginView from '../views/driver/DriverLoginView.vue'
+import DriverHomeView from '../views/driver/DriverHomeView.vue'
 
 const routes = [
   {
@@ -34,6 +35,11 @@ const routes = [
   //   name: 'directions',
   //   component: DirectionsView
   // },
+  {
+    path: '/driver-home',
+    name: 'driver-home',
+    component: DriverHomeView
+  },
   {
     path: '/cus-map',
     name: 'cus-map',
