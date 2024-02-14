@@ -13,6 +13,7 @@ import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
 import VueGoogleMaps from '@fawmi/vue-google-maps'
+// import DriverToggle from '@/components/DriverToggle.vue'
 
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
