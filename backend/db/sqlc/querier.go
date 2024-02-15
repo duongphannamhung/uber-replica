@@ -27,14 +27,18 @@ type Querier interface {
 	// RETURNING *;
 	DeleteTrip(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, id int64) error
+	GetActiveEngagementInGeo(ctx context.Context, geofenceID int32) (Engagement, error)
 	GetDriver(ctx context.Context, id int64) (Driver, error)
+	GetDriverByPhone(ctx context.Context, phone string) (Driver, error)
 	GetEngagement(ctx context.Context, id int64) (Engagement, error)
+	GetEngagementDriver(ctx context.Context, driverID int32) (Engagement, error)
 	GetTrip(ctx context.Context, id int64) (Trip, error)
 	GetUser(ctx context.Context, id int64) (User, error)
 	GetUserByPhone(ctx context.Context, phone string) (User, error)
 	ListDrivers(ctx context.Context, arg ListDriversParams) ([]Driver, error)
 	ListEngagements(ctx context.Context, arg ListEngagementsParams) ([]Engagement, error)
 	ListTrips(ctx context.Context, arg ListTripsParams) ([]Trip, error)
+	UpdateDriverLoginCode(ctx context.Context, arg UpdateDriverLoginCodeParams) (Driver, error)
 	UpdateEngagementLatLng(ctx context.Context, arg UpdateEngagementLatLngParams) (Engagement, error)
 	UpdateEngagementStatus(ctx context.Context, arg UpdateEngagementStatusParams) (Engagement, error)
 	UpdateUserLoginCode(ctx context.Context, arg UpdateUserLoginCodeParams) (User, error)

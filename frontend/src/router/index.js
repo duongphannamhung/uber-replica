@@ -8,6 +8,9 @@ import CusMapView from '../views/customer/CusMapView.vue'
 import ChooseAppView from '../views/ChooseAppView.vue'
 import DriverLoginView from '../views/driver/DriverLoginView.vue'
 import DriverHomeView from '../views/driver/DriverHomeView.vue'
+import CusFindingDriver from '../views/customer/CusFindingDriver.vue'
+import DriverDriveToCus from '../views/driver/DriverDriveToCus.vue'
+import CusWaitingDriverArrive from '../views/customer/CusWaitingDriverArrive.vue'
 
 const routes = [
   {
@@ -35,6 +38,21 @@ const routes = [
   //   name: 'directions',
   //   component: DirectionsView
   // },
+  {
+    path: '/cus-finding-driver',
+    name: 'cus-finding-driver',
+    component: CusFindingDriver
+  },
+  {
+    path: '/cus-waiting-driver-arrive',
+    name: 'cus-waiting-driver-arrive',
+    component: CusWaitingDriverArrive
+  },
+  {
+    path: '/driver-drive-to-cus',
+    name: 'driver-drive-to-cus',
+    component: DriverDriveToCus
+  },
   {
     path: '/driver-home',
     name: 'driver-home',
@@ -92,7 +110,9 @@ const checkTokenAuthenticity = () => {
     }
   })
     // eslint-disable-next-line
-    .then((response) => {})
+    .then((response) => {
+    })
+      
     // eslint-disable-next-line
     .catch((error) => {
       localStorage.removeItem('cus-token')

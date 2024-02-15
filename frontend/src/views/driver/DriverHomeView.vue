@@ -51,22 +51,33 @@
     import { onMounted, ref } from 'vue'
     import DriverToggle from '@/components/DriverToggle.vue';
     import { useLocationStore } from '@/store/location'
+import router from '@/router';
 
     // import { useTripStore } from '@/stores/trip'
   
     const checked = ref(false)
     const location = useLocationStore()
     let intervalId = null;
+    let intervalGetStatus = null;
+
+    const isActive = () => {
+      if (checked.value) {
+        return 1
+      } else {
+        return 0
+      }
+    }
 
     const toggle = () => {
         checked.value = !checked.value;
         if (checked.value) {
           intervalId = setInterval(updateEngagement, 1000)
-          console.log(`intervalId ${intervalId}`)
-        }
-        else if (!checked.value) {
+          intervalGetStatus = setInterval(getDriverStatus, 1000)
+        } else {
           clearInterval(intervalId);
+          clearInterval(intervalGetStatus);
           intervalId = null;
+          intervalGetStatus = null;
         }
     }
 
@@ -74,7 +85,7 @@
       return {
         driver_id: localStorage.getItem('current_driver_id'),
         driver_phone: localStorage.getItem('current_driver_phone'),
-        status: 0,
+        status: isActive(),
         lat : location.current.geometry.lat,
         lng : location.current.geometry.lng,
         geo_id : 1 // update geo_id later
@@ -88,7 +99,29 @@
         }
     })
       .then((response) => {
-          console.log(response.data)
+      })
+      .catch((error) => {
+          console.error(error)
+          alert(error.response.data.message)
+      })
+  }
+
+  const getDriverStatus = async () => {
+    await axios.get('http://localhost:6969/api/driver/current-status?driver_id=' + localStorage.getItem('current_driver_id') , {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('driver-token')}`
+        }
+    })
+      .then((response) => {
+        if (response.data.status !== 0 && response.data.status !== 1) {
+          clearInterval(intervalId);
+          clearInterval(intervalGetStatus);
+          intervalId = null;
+          intervalGetStatus = null;
+          router.push({
+            name: 'driver-drive-to-cus'
+          })
+        }
       })
       .catch((error) => {
           console.error(error)

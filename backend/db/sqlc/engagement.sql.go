@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createEngagement = `-- name: CreateEngagement :one
@@ -24,11 +23,11 @@ RETURNING id, driver_id, status, latitude, longitude, geofence_id, created_at
 `
 
 type CreateEngagementParams struct {
-	DriverID   sql.NullInt64 `json:"driver_id"`
-	Status     int32         `json:"status"`
-	Latitude   float64       `json:"latitude"`
-	Longitude  float64       `json:"longitude"`
-	GeofenceID int32         `json:"geofence_id"`
+	DriverID   int32   `json:"driver_id"`
+	Status     int32   `json:"status"`
+	Latitude   float64 `json:"latitude"`
+	Longitude  float64 `json:"longitude"`
+	GeofenceID int32   `json:"geofence_id"`
 }
 
 func (q *Queries) CreateEngagement(ctx context.Context, arg CreateEngagementParams) (Engagement, error) {
@@ -62,6 +61,26 @@ func (q *Queries) DeleteEngagement(ctx context.Context, id int64) error {
 	return err
 }
 
+const getActiveEngagementInGeo = `-- name: GetActiveEngagementInGeo :one
+SELECT id, driver_id, status, latitude, longitude, geofence_id, created_at FROM engagements
+WHERE geofence_id = $1 AND status = 1 LIMIT 1
+`
+
+func (q *Queries) GetActiveEngagementInGeo(ctx context.Context, geofenceID int32) (Engagement, error) {
+	row := q.db.QueryRowContext(ctx, getActiveEngagementInGeo, geofenceID)
+	var i Engagement
+	err := row.Scan(
+		&i.ID,
+		&i.DriverID,
+		&i.Status,
+		&i.Latitude,
+		&i.Longitude,
+		&i.GeofenceID,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const getEngagement = `-- name: GetEngagement :one
 SELECT id, driver_id, status, latitude, longitude, geofence_id, created_at FROM engagements
 WHERE id = $1 LIMIT 1
@@ -69,6 +88,26 @@ WHERE id = $1 LIMIT 1
 
 func (q *Queries) GetEngagement(ctx context.Context, id int64) (Engagement, error) {
 	row := q.db.QueryRowContext(ctx, getEngagement, id)
+	var i Engagement
+	err := row.Scan(
+		&i.ID,
+		&i.DriverID,
+		&i.Status,
+		&i.Latitude,
+		&i.Longitude,
+		&i.GeofenceID,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getEngagementDriver = `-- name: GetEngagementDriver :one
+SELECT id, driver_id, status, latitude, longitude, geofence_id, created_at FROM engagements
+WHERE driver_id = $1 LIMIT 1
+`
+
+func (q *Queries) GetEngagementDriver(ctx context.Context, driverID int32) (Engagement, error) {
+	row := q.db.QueryRowContext(ctx, getEngagementDriver, driverID)
 	var i Engagement
 	err := row.Scan(
 		&i.ID,
@@ -127,19 +166,25 @@ func (q *Queries) ListEngagements(ctx context.Context, arg ListEngagementsParams
 
 const updateEngagementLatLng = `-- name: UpdateEngagementLatLng :one
 UPDATE engagements
-SET latitude = $2, longitude = $3
+SET latitude = $2, longitude = $3, geofence_id = $4
 WHERE driver_id = $1
 RETURNING id, driver_id, status, latitude, longitude, geofence_id, created_at
 `
 
 type UpdateEngagementLatLngParams struct {
-	DriverID  sql.NullInt64 `json:"driver_id"`
-	Latitude  float64       `json:"latitude"`
-	Longitude float64       `json:"longitude"`
+	DriverID   int32   `json:"driver_id"`
+	Latitude   float64 `json:"latitude"`
+	Longitude  float64 `json:"longitude"`
+	GeofenceID int32   `json:"geofence_id"`
 }
 
 func (q *Queries) UpdateEngagementLatLng(ctx context.Context, arg UpdateEngagementLatLngParams) (Engagement, error) {
-	row := q.db.QueryRowContext(ctx, updateEngagementLatLng, arg.DriverID, arg.Latitude, arg.Longitude)
+	row := q.db.QueryRowContext(ctx, updateEngagementLatLng,
+		arg.DriverID,
+		arg.Latitude,
+		arg.Longitude,
+		arg.GeofenceID,
+	)
 	var i Engagement
 	err := row.Scan(
 		&i.ID,
@@ -161,8 +206,8 @@ RETURNING id, driver_id, status, latitude, longitude, geofence_id, created_at
 `
 
 type UpdateEngagementStatusParams struct {
-	DriverID sql.NullInt64 `json:"driver_id"`
-	Status   int32         `json:"status"`
+	DriverID int32 `json:"driver_id"`
+	Status   int32 `json:"status"`
 }
 
 func (q *Queries) UpdateEngagementStatus(ctx context.Context, arg UpdateEngagementStatusParams) (Engagement, error) {

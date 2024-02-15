@@ -14,6 +14,14 @@ RETURNING *;
 SELECT * FROM engagements
 WHERE id = $1 LIMIT 1;
 
+-- name: GetEngagementDriver :one
+SELECT * FROM engagements
+WHERE driver_id = $1 LIMIT 1;
+
+-- name: GetActiveEngagementInGeo :one
+SELECT * FROM engagements
+WHERE geofence_id = $1 AND status = 1 LIMIT 1;
+
 -- name: ListEngagements :many
 SELECT * FROM engagements
 ORDER BY id
@@ -22,7 +30,7 @@ OFFSET $2;
 
 -- name: UpdateEngagementLatLng :one
 UPDATE engagements
-SET latitude = $2, longitude = $3
+SET latitude = $2, longitude = $3, geofence_id = $4
 WHERE driver_id = $1
 RETURNING *;
 

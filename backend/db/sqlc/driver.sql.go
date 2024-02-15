@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createDriver = `-- name: CreateDriver :one
@@ -77,6 +78,30 @@ func (q *Queries) GetDriver(ctx context.Context, id int64) (Driver, error) {
 	return i, err
 }
 
+const getDriverByPhone = `-- name: GetDriverByPhone :one
+SELECT id, phone, name, login_code, year, make, model, color, license_plate, status, created_at FROM drivers
+WHERE phone = $1 LIMIT 1
+`
+
+func (q *Queries) GetDriverByPhone(ctx context.Context, phone string) (Driver, error) {
+	row := q.db.QueryRowContext(ctx, getDriverByPhone, phone)
+	var i Driver
+	err := row.Scan(
+		&i.ID,
+		&i.Phone,
+		&i.Name,
+		&i.LoginCode,
+		&i.Year,
+		&i.Make,
+		&i.Model,
+		&i.Color,
+		&i.LicensePlate,
+		&i.Status,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const listDrivers = `-- name: ListDrivers :many
 SELECT id, phone, name, login_code, year, make, model, color, license_plate, status, created_at FROM drivers
 ORDER BY id
@@ -122,4 +147,35 @@ func (q *Queries) ListDrivers(ctx context.Context, arg ListDriversParams) ([]Dri
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateDriverLoginCode = `-- name: UpdateDriverLoginCode :one
+UPDATE drivers
+SET login_code = $2
+WHERE id = $1
+RETURNING id, phone, name, login_code, year, make, model, color, license_plate, status, created_at
+`
+
+type UpdateDriverLoginCodeParams struct {
+	ID        int64          `json:"id"`
+	LoginCode sql.NullString `json:"login_code"`
+}
+
+func (q *Queries) UpdateDriverLoginCode(ctx context.Context, arg UpdateDriverLoginCodeParams) (Driver, error) {
+	row := q.db.QueryRowContext(ctx, updateDriverLoginCode, arg.ID, arg.LoginCode)
+	var i Driver
+	err := row.Scan(
+		&i.ID,
+		&i.Phone,
+		&i.Name,
+		&i.LoginCode,
+		&i.Year,
+		&i.Make,
+		&i.Model,
+		&i.Color,
+		&i.LicensePlate,
+		&i.Status,
+		&i.CreatedAt,
+	)
+	return i, err
 }

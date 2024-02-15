@@ -2,13 +2,14 @@
 INSERT INTO trips (
     user_id,
     driver_id,
+    service_type,
     origin_latitude,
     origin_longitude,
     destination_latitude,
     destination_longitude,
     destination_name
 ) VALUES (
-    $1, NULL, $2, $3, $4, $5, $6
+    $1, NULL, $2, $3, $4, $5, $6, $7
 )
 RETURNING *;
 

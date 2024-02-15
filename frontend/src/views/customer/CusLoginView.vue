@@ -80,7 +80,6 @@ const handleVerification = () => {
     // TODO : change this to .env
     axios.post('http://localhost:6969/api/login-phone/verify', getFormattedCredentials())
         .then((response) => {
-            console.log(response.data) // auth token // xongxoa
             localStorage.setItem('cus-token', response.data.access_token)
             localStorage.setItem('current_user_phone', response.data.user.phone)
             localStorage.setItem('current_user_id', response.data.user.id)
