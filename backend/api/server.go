@@ -39,11 +39,13 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 	authRoutes.GET("/api/auth", server.authUser)
 	authRoutes.GET("/api/distance/:departure/:destination", server.getDistance)
 	authRoutes.POST("/api/trip/bike", server.createTripBike)
+	authRoutes.GET("/api/trip/find-driver", server.tripFindDriver)
 
 	router.POST("/api/driver/login-phone", server.driverLoginPhone)
 	router.POST("/api/driver/login-phone/verify", server.verifyDriverLoginPhone)
 	authDriverRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 	authDriverRoutes.GET("/api/driver/auth", server.authDriver)
+	authDriverRoutes.GET("/api/driver/current-status", server.currentDriverStatus)
 	authDriverRoutes.POST("/api/driver/update-engagement", server.driverUpdateEngagement)
 
 	server.router = router

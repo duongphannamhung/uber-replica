@@ -80,7 +80,6 @@ const handleVerification = () => {
     // TODO : change this to .env
     axios.post('http://localhost:6969/api/driver/login-phone/verify', getFormattedCredentials())
         .then((response) => {
-            console.log(response.data) // auth token // xongxoa
             localStorage.setItem('driver-token', response.data.access_token)
             localStorage.setItem('current_driver_phone', response.data.user.phone)
             localStorage.setItem('current_driver_id', response.data.user.id)

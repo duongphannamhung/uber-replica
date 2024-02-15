@@ -24,6 +24,7 @@ CREATE TABLE "trips" (
   "id" bigserial PRIMARY KEY,
   "user_id" bigserial NOT NULL,
   "driver_id" integer references drivers(id),
+  "service_type" integer NOT NULL, -- 1 : bike
   "is_started" boolean NOT NULL DEFAULT (false),
   "is_completed" boolean NOT NULL DEFAULT (false),
   "origin_latitude" float NOT NULL,

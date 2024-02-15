@@ -23,7 +23,12 @@ type GeoPoint struct {
 	Longitude float64 `json:"lng" binding:"required"`
 }
 
+type TripCreateResp struct {
+	TripId int64 `json:"trip_id" binding:"required"`
+}
+
 func (server *Server) createTripBike(ctx *gin.Context) {
+	const service_type = 1
 	var request TripBikeRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
@@ -42,8 +47,9 @@ func (server *Server) createTripBike(ctx *gin.Context) {
 		return
 	}
 
-	_, err = server.store.CreateTrip(ctx, db.CreateTripParams{
+	curr_trip, err := server.store.CreateTrip(ctx, db.CreateTripParams{
 		UserID:               user_id,
+		ServiceType:          service_type,
 		OriginLatitude:       request.OriginPoint.Latitude,
 		OriginLongitude:      request.OriginPoint.Longitude,
 		DestinationLatitude:  request.DestinationPoint.Latitude,
@@ -56,6 +62,6 @@ func (server *Server) createTripBike(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, "StatusOK")
+	ctx.JSON(http.StatusOK, TripCreateResp{TripId: curr_trip.ID})
 	return
 }

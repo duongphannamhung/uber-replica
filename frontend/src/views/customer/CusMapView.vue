@@ -184,7 +184,9 @@
   // })
 
   const goBack = () => {
-    router.push('/cus-location')
+    router.push({
+      name : 'cus-location'
+    })
     // direction.pickup = ''
     // direction.destination = ''
   }
@@ -247,10 +249,10 @@
         }
     })
         .then((response) => {
-          console.log(response.data)
-          // router.push({
-          //   name : 'finding-driver'
-          // })
+          localStorage.setItem('current_trip_id', response.data.trip_id)
+          router.push({
+            name : 'cus-finding-driver'
+          })
         })
         .catch((error) => {
           console.error(error)

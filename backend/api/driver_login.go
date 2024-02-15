@@ -55,19 +55,19 @@ func (server *Server) driverLoginPhone(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 	}
 
-	user, err := server.store.GetUserByPhone(ctx, login_request.Phone)
+	driver, err := server.store.GetDriverByPhone(ctx, login_request.Phone)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// User does not exist, create a new one
 			// You need to provide the necessary fields for a new user
-			user, err = server.store.CreateUser(ctx, login_request.Phone)
+			driver, err = server.store.CreateDriver(ctx, login_request.Phone)
 			if err != nil {
-				log.Fatal("Error creating user: ", err)
+				log.Fatal("Error creating driver: ", err)
 				ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 				return
 			}
 		} else {
-			log.Fatal("Error getting user by phone: ", err)
+			log.Fatal("Error getting driver by phone: ", err)
 			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 			return
 		}
@@ -75,7 +75,7 @@ func (server *Server) driverLoginPhone(ctx *gin.Context) {
 
 	// TODO: temporary otp, replace later with twilio
 	otp := "828954"
-	server.store.UpdateUserLoginCode(ctx, db.UpdateUserLoginCodeParams{ID: user.ID, LoginCode: sql.NullString{String: otp, Valid: true}})
+	server.store.UpdateDriverLoginCode(ctx, db.UpdateDriverLoginCodeParams{ID: driver.ID, LoginCode: sql.NullString{String: otp, Valid: true}})
 
 	// TODO: return session token
 
