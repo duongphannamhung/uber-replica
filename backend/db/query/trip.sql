@@ -23,6 +23,17 @@ ORDER BY id
 LIMIT $1
 OFFSET $2;
 
+
+-- name: UpdateStartTrip :one
+UPDATE trips
+SET driver_id = $2,
+    service_type = $3,
+    is_started = TRUE,
+    driver_location_latitude = $4,
+    driver_location_longitude = $5
+WHERE id = $1
+RETURNING *;
+
 -- -- name: UpdateTrip :one
 -- UPDATE users
 -- SET name = $2

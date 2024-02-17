@@ -41,6 +41,8 @@ type Querier interface {
 	UpdateDriverLoginCode(ctx context.Context, arg UpdateDriverLoginCodeParams) (Driver, error)
 	UpdateEngagementLatLng(ctx context.Context, arg UpdateEngagementLatLngParams) (Engagement, error)
 	UpdateEngagementStatus(ctx context.Context, arg UpdateEngagementStatusParams) (Engagement, error)
+	UpdateEngagementTrip(ctx context.Context, arg UpdateEngagementTripParams) (Engagement, error)
+	UpdateStartTrip(ctx context.Context, arg UpdateStartTripParams) (Trip, error)
 	UpdateUserLoginCode(ctx context.Context, arg UpdateUserLoginCodeParams) (User, error)
 }
 

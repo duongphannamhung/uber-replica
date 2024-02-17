@@ -20,7 +20,7 @@ WHERE driver_id = $1 LIMIT 1;
 
 -- name: GetActiveEngagementInGeo :one
 SELECT * FROM engagements
-WHERE geofence_id = $1 AND status = 1 LIMIT 1;
+WHERE geofence_id = $1 AND status = 2 LIMIT 1;
 
 -- name: ListEngagements :many
 SELECT * FROM engagements
@@ -37,6 +37,12 @@ RETURNING *;
 -- name: UpdateEngagementStatus :one
 UPDATE engagements
 SET status = $2
+WHERE driver_id = $1
+RETURNING *;
+
+-- name: UpdateEngagementTrip :one
+UPDATE engagements
+SET in_trip = $2
 WHERE driver_id = $1
 RETURNING *;
 

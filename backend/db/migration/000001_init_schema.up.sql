@@ -16,7 +16,7 @@ CREATE TABLE "drivers" (
   "model" text,
   "color" text,
   "license_plate" text,
-  "status" integer NOT NULL DEFAULT (0),
+  "status" integer NOT NULL DEFAULT (1),
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 

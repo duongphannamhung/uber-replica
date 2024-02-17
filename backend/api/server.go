@@ -5,6 +5,7 @@ import (
 	db "uber-replica/db/sqlc"
 	"uber-replica/token"
 	"uber-replica/util"
+	"uber-replica/ws"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -47,6 +48,15 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 	authDriverRoutes.GET("/api/driver/auth", server.authDriver)
 	authDriverRoutes.GET("/api/driver/current-status", server.currentDriverStatus)
 	authDriverRoutes.POST("/api/driver/update-engagement", server.driverUpdateEngagement)
+
+	hub := ws.NewHub()
+	wsHandler := ws.NewHandler(hub)
+
+	router.POST("/ws/create-room", wsHandler.CreateRoom)
+	router.GET("/ws/room-info/:roomId", wsHandler.GetRoomInfo)
+	// TODO: add update driver_id to handle driver cancel
+	router.GET("/ws/join-room/:roomId", wsHandler.JoinRoom)
+	go hub.Run()
 
 	server.router = router
 	return server, nil

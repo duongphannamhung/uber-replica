@@ -55,7 +55,7 @@ func (server *Server) driverUpdateEngagement(ctx *gin.Context) {
 			// You need to provide the necessary fields for a new user
 			_, err = server.store.CreateEngagement(ctx, db.CreateEngagementParams{
 				DriverID:   params.DriverID,
-				Status:     0,
+				Status:     1,
 				Latitude:   params.Latitude,
 				Longitude:  params.Longitude,
 				GeofenceID: params.GeofenceID,
@@ -91,6 +91,7 @@ func (server *Server) driverUpdateEngagement(ctx *gin.Context) {
 
 type DriverStatusResponse struct {
 	Status int32 `json:"status" binding:"required"`
+	TripId int32 `json:"trip_id"`
 }
 
 func (server *Server) currentDriverStatus(ctx *gin.Context) {
@@ -114,6 +115,11 @@ func (server *Server) currentDriverStatus(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, DriverStatusResponse{Status: curr_engagement.Status})
+	resp := DriverStatusResponse{Status: curr_engagement.Status}
+	if curr_engagement.Status != 1 && curr_engagement.Status != 2 {
+		resp.TripId = curr_engagement.InTrip.Int32
+	}
+
+	ctx.JSON(http.StatusOK, resp)
 	return
 }

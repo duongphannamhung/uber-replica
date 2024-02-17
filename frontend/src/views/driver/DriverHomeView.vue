@@ -62,9 +62,9 @@ import router from '@/router';
 
     const isActive = () => {
       if (checked.value) {
-        return 1
+        return 2
       } else {
-        return 0
+        return 1
       }
     }
 
@@ -78,6 +78,8 @@ import router from '@/router';
           clearInterval(intervalGetStatus);
           intervalId = null;
           intervalGetStatus = null;
+
+          updateEngagement();
         }
     }
 
@@ -98,8 +100,8 @@ import router from '@/router';
           Authorization: `Bearer ${localStorage.getItem('driver-token')}`
         }
     })
-      .then((response) => {
-      })
+      // .then((response) => {
+      // })
       .catch((error) => {
           console.error(error)
           alert(error.response.data.message)
@@ -113,7 +115,7 @@ import router from '@/router';
         }
     })
       .then((response) => {
-        if (response.data.status !== 0 && response.data.status !== 1) {
+        if (response.data.status !== 1 && response.data.status !== 2) {
           clearInterval(intervalId);
           clearInterval(intervalGetStatus);
           intervalId = null;

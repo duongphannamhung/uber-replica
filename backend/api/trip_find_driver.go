@@ -20,7 +20,7 @@ type noDriverFoundResponse struct {
 
 type findDriverDoneResponse struct {
 	FindDone        bool    `json:"find_done" binding:"required"`
-	DriverId        int32   `json:"driver_id" binding:"required"`
+	DriverId        int64   `json:"driver_id" binding:"required"`
 	EngagementId    int64   `json:"engagement_id" binding:"required"`
 	DriverLatitude  float64 `json:"driver_lat" binding:"required"`
 	DriverLongitude float64 `json:"driver_lng" binding:"required"`
@@ -52,24 +52,50 @@ func (server *Server) tripFindDriver(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, findDriverDoneResponse{
-		FindDone:        true,
-		DriverId:        engagement.DriverID,
-		EngagementId:    engagement.ID,
-		DriverLatitude:  engagement.Latitude,
-		DriverLongitude: engagement.Longitude,
-	})
-
 	_, err = server.store.UpdateEngagementStatus(
 		ctx,
 		db.UpdateEngagementStatusParams{
 			DriverID: engagement.DriverID,
-			Status:   2,
+			Status:   3,
 		})
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 	}
 
+	_, err = server.store.UpdateStartTrip(
+		ctx,
+		db.UpdateStartTripParams{
+			ID:                      trip_id,
+			DriverID:                sql.NullInt32{Int32: engagement.DriverID, Valid: true},
+			ServiceType:             1, // TODO: change this
+			DriverLocationLatitude:  sql.NullFloat64{Float64: engagement.Latitude, Valid: true},
+			DriverLocationLongitude: sql.NullFloat64{Float64: engagement.Longitude, Valid: true},
+		},
+	)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	_, err = server.store.UpdateEngagementTrip(
+		ctx,
+		db.UpdateEngagementTripParams{
+			DriverID: engagement.DriverID,
+			InTrip:   sql.NullInt32{Int32: int32(trip_id), Valid: true},
+		},
+	)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, findDriverDoneResponse{
+		FindDone:        true,
+		DriverId:        int64(engagement.DriverID),
+		EngagementId:    engagement.ID,
+		DriverLatitude:  engagement.Latitude,
+		DriverLongitude: engagement.Longitude,
+	})
 	return
 }
