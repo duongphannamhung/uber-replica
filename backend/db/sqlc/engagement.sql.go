@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createEngagement = `-- name: CreateEngagement :one
@@ -19,7 +20,7 @@ INSERT INTO engagements (
 ) VALUES (
     $1, $2, $3, $4, $5
 )
-RETURNING id, driver_id, status, latitude, longitude, geofence_id, created_at
+RETURNING id, driver_id, status, in_trip, latitude, longitude, geofence_id, created_at
 `
 
 type CreateEngagementParams struct {
@@ -43,6 +44,7 @@ func (q *Queries) CreateEngagement(ctx context.Context, arg CreateEngagementPara
 		&i.ID,
 		&i.DriverID,
 		&i.Status,
+		&i.InTrip,
 		&i.Latitude,
 		&i.Longitude,
 		&i.GeofenceID,
@@ -62,8 +64,8 @@ func (q *Queries) DeleteEngagement(ctx context.Context, id int64) error {
 }
 
 const getActiveEngagementInGeo = `-- name: GetActiveEngagementInGeo :one
-SELECT id, driver_id, status, latitude, longitude, geofence_id, created_at FROM engagements
-WHERE geofence_id = $1 AND status = 1 LIMIT 1
+SELECT id, driver_id, status, in_trip, latitude, longitude, geofence_id, created_at FROM engagements
+WHERE geofence_id = $1 AND status = 2 LIMIT 1
 `
 
 func (q *Queries) GetActiveEngagementInGeo(ctx context.Context, geofenceID int32) (Engagement, error) {
@@ -73,6 +75,7 @@ func (q *Queries) GetActiveEngagementInGeo(ctx context.Context, geofenceID int32
 		&i.ID,
 		&i.DriverID,
 		&i.Status,
+		&i.InTrip,
 		&i.Latitude,
 		&i.Longitude,
 		&i.GeofenceID,
@@ -82,7 +85,7 @@ func (q *Queries) GetActiveEngagementInGeo(ctx context.Context, geofenceID int32
 }
 
 const getEngagement = `-- name: GetEngagement :one
-SELECT id, driver_id, status, latitude, longitude, geofence_id, created_at FROM engagements
+SELECT id, driver_id, status, in_trip, latitude, longitude, geofence_id, created_at FROM engagements
 WHERE id = $1 LIMIT 1
 `
 
@@ -93,6 +96,7 @@ func (q *Queries) GetEngagement(ctx context.Context, id int64) (Engagement, erro
 		&i.ID,
 		&i.DriverID,
 		&i.Status,
+		&i.InTrip,
 		&i.Latitude,
 		&i.Longitude,
 		&i.GeofenceID,
@@ -102,7 +106,7 @@ func (q *Queries) GetEngagement(ctx context.Context, id int64) (Engagement, erro
 }
 
 const getEngagementDriver = `-- name: GetEngagementDriver :one
-SELECT id, driver_id, status, latitude, longitude, geofence_id, created_at FROM engagements
+SELECT id, driver_id, status, in_trip, latitude, longitude, geofence_id, created_at FROM engagements
 WHERE driver_id = $1 LIMIT 1
 `
 
@@ -113,6 +117,7 @@ func (q *Queries) GetEngagementDriver(ctx context.Context, driverID int32) (Enga
 		&i.ID,
 		&i.DriverID,
 		&i.Status,
+		&i.InTrip,
 		&i.Latitude,
 		&i.Longitude,
 		&i.GeofenceID,
@@ -122,7 +127,7 @@ func (q *Queries) GetEngagementDriver(ctx context.Context, driverID int32) (Enga
 }
 
 const listEngagements = `-- name: ListEngagements :many
-SELECT id, driver_id, status, latitude, longitude, geofence_id, created_at FROM engagements
+SELECT id, driver_id, status, in_trip, latitude, longitude, geofence_id, created_at FROM engagements
 ORDER BY id
 LIMIT $1
 OFFSET $2
@@ -146,6 +151,7 @@ func (q *Queries) ListEngagements(ctx context.Context, arg ListEngagementsParams
 			&i.ID,
 			&i.DriverID,
 			&i.Status,
+			&i.InTrip,
 			&i.Latitude,
 			&i.Longitude,
 			&i.GeofenceID,
@@ -168,7 +174,7 @@ const updateEngagementLatLng = `-- name: UpdateEngagementLatLng :one
 UPDATE engagements
 SET latitude = $2, longitude = $3, geofence_id = $4
 WHERE driver_id = $1
-RETURNING id, driver_id, status, latitude, longitude, geofence_id, created_at
+RETURNING id, driver_id, status, in_trip, latitude, longitude, geofence_id, created_at
 `
 
 type UpdateEngagementLatLngParams struct {
@@ -190,6 +196,7 @@ func (q *Queries) UpdateEngagementLatLng(ctx context.Context, arg UpdateEngageme
 		&i.ID,
 		&i.DriverID,
 		&i.Status,
+		&i.InTrip,
 		&i.Latitude,
 		&i.Longitude,
 		&i.GeofenceID,
@@ -202,7 +209,7 @@ const updateEngagementStatus = `-- name: UpdateEngagementStatus :one
 UPDATE engagements
 SET status = $2
 WHERE driver_id = $1
-RETURNING id, driver_id, status, latitude, longitude, geofence_id, created_at
+RETURNING id, driver_id, status, in_trip, latitude, longitude, geofence_id, created_at
 `
 
 type UpdateEngagementStatusParams struct {
@@ -217,6 +224,35 @@ func (q *Queries) UpdateEngagementStatus(ctx context.Context, arg UpdateEngageme
 		&i.ID,
 		&i.DriverID,
 		&i.Status,
+		&i.InTrip,
+		&i.Latitude,
+		&i.Longitude,
+		&i.GeofenceID,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const updateEngagementTrip = `-- name: UpdateEngagementTrip :one
+UPDATE engagements
+SET in_trip = $2
+WHERE driver_id = $1
+RETURNING id, driver_id, status, in_trip, latitude, longitude, geofence_id, created_at
+`
+
+type UpdateEngagementTripParams struct {
+	DriverID int32         `json:"driver_id"`
+	InTrip   sql.NullInt32 `json:"in_trip"`
+}
+
+func (q *Queries) UpdateEngagementTrip(ctx context.Context, arg UpdateEngagementTripParams) (Engagement, error) {
+	row := q.db.QueryRowContext(ctx, updateEngagementTrip, arg.DriverID, arg.InTrip)
+	var i Engagement
+	err := row.Scan(
+		&i.ID,
+		&i.DriverID,
+		&i.Status,
+		&i.InTrip,
 		&i.Latitude,
 		&i.Longitude,
 		&i.GeofenceID,

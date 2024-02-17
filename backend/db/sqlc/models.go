@@ -24,13 +24,14 @@ type Driver struct {
 }
 
 type Engagement struct {
-	ID         int64     `json:"id"`
-	DriverID   int32     `json:"driver_id"`
-	Status     int32     `json:"status"`
-	Latitude   float64   `json:"latitude"`
-	Longitude  float64   `json:"longitude"`
-	GeofenceID int32     `json:"geofence_id"`
-	CreatedAt  time.Time `json:"created_at"`
+	ID         int64         `json:"id"`
+	DriverID   int32         `json:"driver_id"`
+	Status     int32         `json:"status"`
+	InTrip     sql.NullInt32 `json:"in_trip"`
+	Latitude   float64       `json:"latitude"`
+	Longitude  float64       `json:"longitude"`
+	GeofenceID int32         `json:"geofence_id"`
+	CreatedAt  time.Time     `json:"created_at"`
 }
 
 type Trip struct {

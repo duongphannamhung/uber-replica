@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createTrip = `-- name: CreateTrip :one
@@ -156,4 +157,51 @@ func (q *Queries) ListTrips(ctx context.Context, arg ListTripsParams) ([]Trip, e
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateStartTrip = `-- name: UpdateStartTrip :one
+UPDATE trips
+SET driver_id = $2,
+    service_type = $3,
+    is_started = TRUE,
+    driver_location_latitude = $4,
+    driver_location_longitude = $5
+WHERE id = $1
+RETURNING id, user_id, driver_id, service_type, is_started, is_completed, origin_latitude, origin_longitude, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, created_at
+`
+
+type UpdateStartTripParams struct {
+	ID                      int64           `json:"id"`
+	DriverID                sql.NullInt32   `json:"driver_id"`
+	ServiceType             int32           `json:"service_type"`
+	DriverLocationLatitude  sql.NullFloat64 `json:"driver_location_latitude"`
+	DriverLocationLongitude sql.NullFloat64 `json:"driver_location_longitude"`
+}
+
+func (q *Queries) UpdateStartTrip(ctx context.Context, arg UpdateStartTripParams) (Trip, error) {
+	row := q.db.QueryRowContext(ctx, updateStartTrip,
+		arg.ID,
+		arg.DriverID,
+		arg.ServiceType,
+		arg.DriverLocationLatitude,
+		arg.DriverLocationLongitude,
+	)
+	var i Trip
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.DriverID,
+		&i.ServiceType,
+		&i.IsStarted,
+		&i.IsCompleted,
+		&i.OriginLatitude,
+		&i.OriginLongitude,
+		&i.DestinationLatitude,
+		&i.DestinationLongitude,
+		&i.DestinationName,
+		&i.DriverLocationLatitude,
+		&i.DriverLocationLongitude,
+		&i.CreatedAt,
+	)
+	return i, err
 }
