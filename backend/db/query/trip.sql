@@ -34,6 +34,12 @@ SET driver_id = $2,
 WHERE id = $1
 RETURNING *;
 
+-- name: UpdateTripFare :one
+UPDATE trips
+SET fare = $2
+WHERE id = $1
+RETURNING *;
+
 -- -- name: UpdateTrip :one
 -- UPDATE users
 -- SET name = $2

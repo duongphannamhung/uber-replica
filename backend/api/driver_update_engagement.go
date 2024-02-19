@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
@@ -121,5 +122,47 @@ func (server *Server) currentDriverStatus(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, resp)
+	return
+}
+
+type UpdateTripFareRequest struct {
+	TripId int64 `json:"trip_id" binding:"required"`
+	Fare   int32 `json:"fare" binding:"required"`
+}
+
+type UpdateTripFareResponse struct {
+	TripId int64 `json:"trip_id" binding:"required"`
+	Fare   int32 `json:"fare" binding:"required"`
+}
+
+func (server *Server) updateTripFare(ctx *gin.Context) {
+	val, err := ctx.GetRawData()
+	if err != nil {
+		log.Fatal("Error getting raw data: ", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	var update_fare_req UpdateTripFareRequest
+	err = json.Unmarshal(val, &update_fare_req)
+	if err != nil {
+		log.Fatal("Error unmarshalling update trip fare req: ", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+	}
+
+	_, err = server.store.UpdateTripFare(ctx, db.UpdateTripFareParams{
+		ID:   update_fare_req.TripId,
+		Fare: sql.NullInt32{Int32: update_fare_req.Fare, Valid: true},
+	})
+	if err != nil {
+		log.Fatal("Error updating trip fare: ", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, UpdateTripFareResponse{
+		TripId: update_fare_req.TripId,
+		Fare:   update_fare_req.Fare,
+	})
 	return
 }

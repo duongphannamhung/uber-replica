@@ -48,6 +48,7 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 	authDriverRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 	authDriverRoutes.GET("/api/driver/auth", server.authDriver)
 	authDriverRoutes.GET("/api/driver/current-status", server.currentDriverStatus)
+	authDriverRoutes.POST("/api/driver/update-trip-fare", server.updateTripFare)
 	authDriverRoutes.POST("/api/driver/update-engagement", server.driverUpdateEngagement)
 
 	hub := ws.NewHub()
