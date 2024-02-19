@@ -49,6 +49,16 @@ const routes = [
     component: CusWaitingDriverArrive
   },
   {
+    path: '/cus-message-in-trip',
+    name: 'cus-message-in-trip',
+    component: () => import("../views/customer/CustomerMessageInTrip.vue"),
+  }, 
+  {
+    path: "/driver-message-in-trip",
+    name: "driver-message-in-trip",
+    component: () => import("../views/driver/DriverMessageInTrip.vue"),
+  },
+  {
     path: '/driver-drive-to-cus',
     name: 'driver-drive-to-cus',
     component: DriverDriveToCus
@@ -57,6 +67,26 @@ const routes = [
     path: '/driver-home',
     name: 'driver-home',
     component: DriverHomeView
+  },
+  {
+    path: '/cus-in-trip',
+    name: 'cus-in-trip',
+    component: () => import("../views/customer/CusInTrip.vue"), 
+  },
+  {
+    path: '/driver-in-trip',
+    name: 'driver-in-trip',
+    component: () => import("../views/driver/DriverInTrip.vue"),
+  },
+  {
+    path: '/driver-complete-trip',
+    name: 'driver-complete-trip',
+    component: () => import("../views/driver/DriverCompleteTrip.vue"),
+  },
+  {
+    path: '/cus-complete-trip',
+    name: 'cus-complete-trip',
+    component: () => import("../views/customer/CusCompleteTrip.vue"),
   },
   {
     path: '/cus-map',

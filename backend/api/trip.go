@@ -65,3 +65,20 @@ func (server *Server) createTripBike(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, TripCreateResp{TripId: curr_trip.ID})
 	return
 }
+
+func (server *Server) getTripInfo(ctx *gin.Context) {
+	tripId, err := strconv.ParseInt(ctx.Param("tripId"), 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	trip, err := server.store.GetTrip(ctx, tripId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, trip)
+	return
+}

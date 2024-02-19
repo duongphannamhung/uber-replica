@@ -12,6 +12,7 @@
   "dependencies": {
     "@vueform/toggle": "^2.1.4",
     "autoprefixer": "^10",
+    "autosize": "^6.0.1",
     "axios": "^1.6.5",
     "core-js": "^3.8.3",
     "lodash": "^4.17.21",
@@ -30,6 +31,7 @@
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
     "@fawmi/vue-google-maps": "^0.9.79",
+    "@types/uuid": "^9.0.8",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-plugin-pwa": "~5.0.0",

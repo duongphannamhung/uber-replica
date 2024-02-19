@@ -19,7 +19,6 @@ type Driver struct {
 	Model        sql.NullString `json:"model"`
 	Color        sql.NullString `json:"color"`
 	LicensePlate sql.NullString `json:"license_plate"`
-	Status       int32          `json:"status"`
 	CreatedAt    time.Time      `json:"created_at"`
 }
 

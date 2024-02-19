@@ -7,12 +7,13 @@ import (
 )
 
 type Client struct {
-	Conn        *websocket.Conn
-	Message     chan *Message
-	ID          string `json:"id"`
-	RoomID      string `json:"room_id"`
-	PhoneNumber string `json:"phone_number"`
-	IsCustomer  bool   `json:"is_customer"`
+	Conn           *websocket.Conn
+	Message        chan *Message
+	ID             string `json:"id"`
+	OriginalUserID string `json:"original_user_id"`
+	RoomID         string `json:"room_id"`
+	PhoneNumber    string `json:"phone_number"`
+	IsCustomer     bool   `json:"is_customer"`
 }
 
 type Message struct {
@@ -21,11 +22,6 @@ type Message struct {
 	UserID      string `json:"user_id"`
 	PhoneNumber string `json:"phone_number"`
 	IsCustomer  bool   `json:"is_customer"`
-}
-
-type LatLng struct {
-	Latitude  float64 `json:"latitude"`
-	Longitude float64 `json:"longitude"`
 }
 
 func (c *Client) writeMessage() {
@@ -61,7 +57,7 @@ func (c *Client) readMessage(hub *Hub) {
 		msg := &Message{
 			Content:     string(m),
 			RoomID:      c.RoomID,
-			UserID:      c.ID,
+			UserID:      c.OriginalUserID,
 			PhoneNumber: c.PhoneNumber,
 			IsCustomer:  c.IsCustomer,
 		}

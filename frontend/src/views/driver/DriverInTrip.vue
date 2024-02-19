@@ -27,7 +27,7 @@
       <div id="CustomerInfo" class=" w-full">
         <div class="w-full h-2 border-t"></div>
         <div class="w-full text-center border-t-2 p-1.5 text-gray-700 text-lg font-semibold">
-          Di chuyển đến khách hàng
+          Đang trên đường đến {{ destination.address }}
         </div>
         <!-- <div class="scrollSection">
           <div 
@@ -58,21 +58,39 @@
             absolute 
             bottom-0 
             shadow-inner
-          " @click="goToMessage()"
+          " 
         >
-          <button  
-            class="
-              bg-black 
-              text-2xl 
-              text-white
-              py-4 
-              px-4 
-              rounded-sm
-              w-full
-            "
-          >
-            Message
-          </button>
+            <div class="flex justify-around w-full">
+            <button  
+                class="
+                bg-black 
+                text-2xl 
+                text-white
+                py-2 
+                px-4 
+                rounded-sm
+                w-1/2
+                mr-2
+                " @click="goToMessage()"
+            >
+                Nhắn tin
+            </button>
+            <button  
+                class="
+                bg-black 
+                text-2xl 
+                text-white
+                py-2
+                px-4 
+                rounded-sm
+                w-1/2
+                ml-2
+                "
+                @click="completeTrip()"
+            >
+                Hoàn thành chuyến
+            </button>
+            </div>
         </div>
   
       </div>
@@ -81,15 +99,18 @@
   
   <script setup>
     import axios from 'axios';
-    import { onMounted, ref, reactive } from 'vue'
+    import { onMounted, ref, reactive, inject } from 'vue'
     import { useRouter } from 'vue-router'
-    // import ArrowLeftIcon from 'vue-material-design-icons/ArrowLeft.vue';
-    // import { useDirectionStore } from '@/store/direction-store';
     import { useLocationStore } from '@/store/location'
-    // import { useTripStore } from '@/stores/trip'
-
+  
+    // import mapStyles from '../mapStyles'
     const router = useRouter()
     const location = useLocationStore()
+    const destination = ref({address: '', lat: null, lng: null})
+    // const trip = useTripStore()
+    const conn = inject('websocketStore').conn
+  
+    const gMap = ref(null)
     const customer_location = reactive({
         // name: '',
         // address: '',
@@ -98,11 +119,7 @@
             lng: null
         }
     })
-    // const trip = useTripStore()
-  
-    const gMap = ref(null)
-    let driver_come_interval = null
-    
+
     // const direction = useDirectionStore()
   
     onMounted(async () => {
@@ -113,14 +130,15 @@
         }).then((resp) => {
             customer_location.geometry.lat = resp.data.origin_latitude
             customer_location.geometry.lng = resp.data.origin_longitude
+            destination.value.address = resp.data.destination_name
+            destination.value.lat = resp.data.destination_latitude
+            destination.value.lng = resp.data.destination_longitude
         }).catch((error) => {
             console.error(error)
             alert(error.response.data.message)
         })
 
-        driver_come_interval = setInterval(updateDriverLocation, 1000);
-        
-        // lets get the driver current location
+        // lets get the users current location
         await location.updateCurrentLocation()
   
         // draw a path on the map
@@ -128,7 +146,7 @@
             // eslint-disable-next-line
             let currentPoint = new google.maps.LatLng(location.current.geometry),
             // eslint-disable-next-line
-                destinationPoint = new google.maps.LatLng(customer_location.geometry),
+                destinationPoint = new google.maps.LatLng(location.destination.geometry),
             // eslint-disable-next-line
                 directionsService = new google.maps.DirectionsService,
             // eslint-disable-next-line
@@ -154,56 +172,24 @@
         })
     })
 
-    // const latLng = ref({ start: { lat: null, lng: null }, end: { lat: null, lng: null } })
-  
-    // onMounted(async () => {
-    //   if (!direction.pickup || !direction.destination) { router.push('/') }
-    //   setTimeout(() => { initMap() }, 50)
-    // })
-  
     const goToMessage = async () => {
         router.push({
             name : 'driver-message-in-trip'
         })
     }
 
-    const updateDriverLocation = async () => {
-    if (getDistanceFromLatLonInKm(location.current.geometry.lat, location.current.geometry.lng, customer_location.geometry.lat, customer_location.geometry.lng) < 100) {
-      clearInterval(driver_come_interval)
+    const completeTrip = async () => {
+        if (conn === null) {
+          alert("Ws conn null. Can't completed trip")
+          return
+        }
 
-      await sleep(3000);
-
-      router.push({
-          name : 'driver-in-trip'
-      })
+        conn.send('finishline-@123!(*234kh219871233hadsfh')
+        router.push({
+            name : 'driver-complete-trip'
+        })
     }
-  }
-
-  var sleepSetTimeout_ctrl;
-
-  function sleep(ms) {
-      clearInterval(sleepSetTimeout_ctrl);
-      return new Promise(resolve => sleepSetTimeout_ctrl = setTimeout(resolve, ms));
-  }
-
-  function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
-    var R = 6371; // Radius of the earth in km
-    var dLat = deg2rad(lat2-lat1);  // deg2rad below
-    var dLon = deg2rad(lon2-lon1); 
-    var a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-      Math.sin(dLon/2) * Math.sin(dLon/2)
-      ; 
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-    var d = R * c; // Distance in km
-    return d * 1000;
-  }
-
-  function deg2rad(deg) {
-    return deg * (Math.PI/180)
-  }
-
+  
   </script>
   
   <style lang="scss">

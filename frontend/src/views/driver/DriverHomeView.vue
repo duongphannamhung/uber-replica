@@ -51,7 +51,8 @@
     import { onMounted, ref } from 'vue'
     import DriverToggle from '@/components/DriverToggle.vue';
     import { useLocationStore } from '@/store/location'
-import router from '@/router';
+    import { websocketStore } from '@/store/websocket-store'
+    import router from '@/router';
 
     // import { useTripStore } from '@/stores/trip'
   
@@ -108,6 +109,25 @@ import router from '@/router';
       })
   }
 
+  const getTripInfo = async (trip_id) => {
+    await axios.get(`http://localhost:6969/api/trip/${trip_id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('driver-token')}`
+      }
+    }).then((resp) => {
+      const ws = new WebSocket(`ws://localhost:6969/ws/join-room/${resp.data.id}?userId=${resp.data.driver_id.Int32}&phoneNumber="${localStorage.getItem('current_driver_phone')}"&isCustomer=false`);
+      websocketStore.setConn(ws);
+      if (websocketStore.conn && websocketStore.conn.OPEN) {
+        router.push({
+          name: 'driver-drive-to-cus'
+        })
+      }
+    }).catch((error) => {
+      console.error(error)
+      alert(error.response.data.message)
+    })
+  }
+
   const getDriverStatus = async () => {
     await axios.get('http://localhost:6969/api/driver/current-status?driver_id=' + localStorage.getItem('current_driver_id') , {
         headers: {
@@ -120,9 +140,8 @@ import router from '@/router';
           clearInterval(intervalGetStatus);
           intervalId = null;
           intervalGetStatus = null;
-          router.push({
-            name: 'driver-drive-to-cus'
-          })
+
+          getTripInfo(response.data.trip_id)
         }
       })
       .catch((error) => {
