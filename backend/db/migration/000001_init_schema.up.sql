@@ -25,7 +25,6 @@ CREATE TABLE "trips" (
   "driver_id" integer references drivers(id),
   "service_type" integer NOT NULL, -- 1 : bike
   "is_started" boolean NOT NULL DEFAULT (false),
-  "is_completed" boolean NOT NULL DEFAULT (false),
   "origin_latitude" float NOT NULL,
   "origin_longitude" float NOT NULL,
   "destination_latitude" float NOT NULL,
@@ -33,6 +32,7 @@ CREATE TABLE "trips" (
   "destination_name" text NOT NULL,
   "driver_location_latitude" float,
   "driver_location_longitude" float,
+  "fare" integer,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 

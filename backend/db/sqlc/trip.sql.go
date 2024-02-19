@@ -23,7 +23,7 @@ INSERT INTO trips (
 ) VALUES (
     $1, NULL, $2, $3, $4, $5, $6, $7
 )
-RETURNING id, user_id, driver_id, service_type, is_started, is_completed, origin_latitude, origin_longitude, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, created_at
+RETURNING id, user_id, driver_id, service_type, is_started, origin_latitude, origin_longitude, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, fare, created_at
 `
 
 type CreateTripParams struct {
@@ -53,7 +53,6 @@ func (q *Queries) CreateTrip(ctx context.Context, arg CreateTripParams) (Trip, e
 		&i.DriverID,
 		&i.ServiceType,
 		&i.IsStarted,
-		&i.IsCompleted,
 		&i.OriginLatitude,
 		&i.OriginLongitude,
 		&i.DestinationLatitude,
@@ -61,6 +60,7 @@ func (q *Queries) CreateTrip(ctx context.Context, arg CreateTripParams) (Trip, e
 		&i.DestinationName,
 		&i.DriverLocationLatitude,
 		&i.DriverLocationLongitude,
+		&i.Fare,
 		&i.CreatedAt,
 	)
 	return i, err
@@ -83,7 +83,7 @@ func (q *Queries) DeleteTrip(ctx context.Context, id int64) error {
 }
 
 const getTrip = `-- name: GetTrip :one
-SELECT id, user_id, driver_id, service_type, is_started, is_completed, origin_latitude, origin_longitude, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, created_at FROM trips
+SELECT id, user_id, driver_id, service_type, is_started, origin_latitude, origin_longitude, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, fare, created_at FROM trips
 WHERE id = $1 LIMIT 1
 `
 
@@ -96,7 +96,6 @@ func (q *Queries) GetTrip(ctx context.Context, id int64) (Trip, error) {
 		&i.DriverID,
 		&i.ServiceType,
 		&i.IsStarted,
-		&i.IsCompleted,
 		&i.OriginLatitude,
 		&i.OriginLongitude,
 		&i.DestinationLatitude,
@@ -104,13 +103,14 @@ func (q *Queries) GetTrip(ctx context.Context, id int64) (Trip, error) {
 		&i.DestinationName,
 		&i.DriverLocationLatitude,
 		&i.DriverLocationLongitude,
+		&i.Fare,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const listTrips = `-- name: ListTrips :many
-SELECT id, user_id, driver_id, service_type, is_started, is_completed, origin_latitude, origin_longitude, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, created_at FROM trips
+SELECT id, user_id, driver_id, service_type, is_started, origin_latitude, origin_longitude, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, fare, created_at FROM trips
 ORDER BY id
 LIMIT $1
 OFFSET $2
@@ -136,7 +136,6 @@ func (q *Queries) ListTrips(ctx context.Context, arg ListTripsParams) ([]Trip, e
 			&i.DriverID,
 			&i.ServiceType,
 			&i.IsStarted,
-			&i.IsCompleted,
 			&i.OriginLatitude,
 			&i.OriginLongitude,
 			&i.DestinationLatitude,
@@ -144,6 +143,7 @@ func (q *Queries) ListTrips(ctx context.Context, arg ListTripsParams) ([]Trip, e
 			&i.DestinationName,
 			&i.DriverLocationLatitude,
 			&i.DriverLocationLongitude,
+			&i.Fare,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -167,7 +167,7 @@ SET driver_id = $2,
     driver_location_latitude = $4,
     driver_location_longitude = $5
 WHERE id = $1
-RETURNING id, user_id, driver_id, service_type, is_started, is_completed, origin_latitude, origin_longitude, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, created_at
+RETURNING id, user_id, driver_id, service_type, is_started, origin_latitude, origin_longitude, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, fare, created_at
 `
 
 type UpdateStartTripParams struct {
@@ -193,7 +193,6 @@ func (q *Queries) UpdateStartTrip(ctx context.Context, arg UpdateStartTripParams
 		&i.DriverID,
 		&i.ServiceType,
 		&i.IsStarted,
-		&i.IsCompleted,
 		&i.OriginLatitude,
 		&i.OriginLongitude,
 		&i.DestinationLatitude,
@@ -201,6 +200,41 @@ func (q *Queries) UpdateStartTrip(ctx context.Context, arg UpdateStartTripParams
 		&i.DestinationName,
 		&i.DriverLocationLatitude,
 		&i.DriverLocationLongitude,
+		&i.Fare,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const updateTripFare = `-- name: UpdateTripFare :one
+UPDATE trips
+SET fare = $2
+WHERE id = $1
+RETURNING id, user_id, driver_id, service_type, is_started, origin_latitude, origin_longitude, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, fare, created_at
+`
+
+type UpdateTripFareParams struct {
+	ID   int64         `json:"id"`
+	Fare sql.NullInt32 `json:"fare"`
+}
+
+func (q *Queries) UpdateTripFare(ctx context.Context, arg UpdateTripFareParams) (Trip, error) {
+	row := q.db.QueryRowContext(ctx, updateTripFare, arg.ID, arg.Fare)
+	var i Trip
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.DriverID,
+		&i.ServiceType,
+		&i.IsStarted,
+		&i.OriginLatitude,
+		&i.OriginLongitude,
+		&i.DestinationLatitude,
+		&i.DestinationLongitude,
+		&i.DestinationName,
+		&i.DriverLocationLatitude,
+		&i.DriverLocationLongitude,
+		&i.Fare,
 		&i.CreatedAt,
 	)
 	return i, err

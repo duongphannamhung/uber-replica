@@ -6,6 +6,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 type Querier interface {
@@ -43,6 +44,7 @@ type Querier interface {
 	UpdateEngagementStatus(ctx context.Context, arg UpdateEngagementStatusParams) (Engagement, error)
 	UpdateEngagementTrip(ctx context.Context, arg UpdateEngagementTripParams) (Engagement, error)
 	UpdateStartTrip(ctx context.Context, arg UpdateStartTripParams) (Trip, error)
+	UpdateTripFare(ctx context.Context, arg UpdateTripFareParams) (Trip, error)
 	UpdateUserLoginCode(ctx context.Context, arg UpdateUserLoginCodeParams) (User, error)
 }
 

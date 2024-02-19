@@ -39,7 +39,6 @@ type Trip struct {
 	DriverID                sql.NullInt32   `json:"driver_id"`
 	ServiceType             int32           `json:"service_type"`
 	IsStarted               bool            `json:"is_started"`
-	IsCompleted             bool            `json:"is_completed"`
 	OriginLatitude          float64         `json:"origin_latitude"`
 	OriginLongitude         float64         `json:"origin_longitude"`
 	DestinationLatitude     float64         `json:"destination_latitude"`
@@ -47,6 +46,7 @@ type Trip struct {
 	DestinationName         string          `json:"destination_name"`
 	DriverLocationLatitude  sql.NullFloat64 `json:"driver_location_latitude"`
 	DriverLocationLongitude sql.NullFloat64 `json:"driver_location_longitude"`
+	Fare                    sql.NullInt32   `json:"fare"`
 	CreatedAt               time.Time       `json:"created_at"`
 }
 
