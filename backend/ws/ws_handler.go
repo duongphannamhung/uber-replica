@@ -86,13 +86,21 @@ func (h *Handler) JoinRoom(c *gin.Context) {
 		return
 	}
 
+	client_id := userID
+	if isCustomer == "true" {
+		client_id = "cus_" + client_id
+	} else {
+		client_id = "drv_" + client_id
+	}
+
 	cl := &Client{
-		Conn:        conn,
-		Message:     make(chan *Message, 10),
-		ID:          userID,
-		RoomID:      roomID,
-		PhoneNumber: phoneNumber,
-		IsCustomer:  isCustomer == "true",
+		Conn:           conn,
+		Message:        make(chan *Message, 10),
+		ID:             client_id,
+		OriginalUserID: userID,
+		RoomID:         roomID,
+		PhoneNumber:    phoneNumber,
+		IsCustomer:     isCustomer == "true",
 	}
 
 	// m := &Message{
@@ -123,4 +131,32 @@ func (h *Handler) GetRoomInfo(c *gin.Context) {
 			DriverID:   curr_room.DriverID,
 		})
 	}
+}
+
+type ClientRes struct {
+	ID          string `json:"id"`
+	UserID      string `json:"user_id"`
+	PhoneNumber string `json:"phone_number"`
+	IsCustomer  bool   `json:"is_customer"`
+}
+
+func (h *Handler) GetClients(c *gin.Context) {
+	var clients []ClientRes
+	roomId := c.Param("roomId")
+
+	if _, ok := h.hub.Rooms[roomId]; !ok {
+		clients = make([]ClientRes, 0)
+		c.JSON(http.StatusOK, clients)
+	}
+
+	for _, c := range h.hub.Rooms[roomId].Clients {
+		clients = append(clients, ClientRes{
+			ID:          c.ID,
+			UserID:      c.OriginalUserID,
+			PhoneNumber: c.PhoneNumber,
+			IsCustomer:  c.IsCustomer,
+		})
+	}
+
+	c.JSON(http.StatusOK, clients)
 }

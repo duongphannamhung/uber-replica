@@ -90,6 +90,7 @@
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router'
 import axios from 'axios';
+import { websocketStore } from '@/store/websocket-store'
 
 const router = useRouter()
 const goBack = () => {
@@ -123,10 +124,25 @@ const findDriver = async () => {
           Authorization: `Bearer ${localStorage.getItem('cus-token')}`
         }
     })
-        .then((response) => {
+        .then(async (response) => {
             if (response.data.find_done) {
-                router.push({
-                    name : 'cus-waiting-driver-arrive'
+                await axios.post('http://localhost:6969/ws/create-room', {
+                    id: localStorage.getItem('current_trip_id'),
+                    customer_id: localStorage.getItem('current_user_id'),
+                    driver_id: response.data.driver_id.toString()
+                }).then((resp) => {
+                    const ws = new WebSocket(`ws://localhost:6969/ws/join-room/${resp.data.id}?userId=${resp.data.customer_id}&phoneNumber="${localStorage.getItem('current_user_phone')}"&isCustomer=true`);
+                    websocketStore.setConn(ws);
+                    if (websocketStore.conn && websocketStore.conn.OPEN) {
+                        router.push({
+                                name : 'cus-waiting-driver-arrive'
+                            })
+                        }
+                    }
+                ).catch((error) => {
+                    console.error(error)
+                    alert(error.response.data.message)
+                    goBack()
                 })
             }
         })
@@ -136,5 +152,6 @@ const findDriver = async () => {
             goBack()
         })
 }
+
 
 </script>

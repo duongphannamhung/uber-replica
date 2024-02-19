@@ -39,6 +39,7 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 	authRoutes.GET("/api/auth", server.authUser)
 	authRoutes.GET("/api/distance/:departure/:destination", server.getDistance)
+	authRoutes.GET("/api/trip/:tripId", server.getTripInfo)
 	authRoutes.POST("/api/trip/bike", server.createTripBike)
 	authRoutes.GET("/api/trip/find-driver", server.tripFindDriver)
 
@@ -56,6 +57,7 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 	router.GET("/ws/room-info/:roomId", wsHandler.GetRoomInfo)
 	// TODO: add update driver_id to handle driver cancel
 	router.GET("/ws/join-room/:roomId", wsHandler.JoinRoom)
+	router.GET("/ws/get-clients/:roomId", wsHandler.GetClients)
 	go hub.Run()
 
 	server.router = router

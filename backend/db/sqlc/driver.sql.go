@@ -16,7 +16,7 @@ INSERT INTO drivers (
 ) VALUES (
     $1
 )
-RETURNING id, phone, name, login_code, year, make, model, color, license_plate, status, created_at
+RETURNING id, phone, name, login_code, year, make, model, color, license_plate, created_at
 `
 
 func (q *Queries) CreateDriver(ctx context.Context, phone string) (Driver, error) {
@@ -32,7 +32,6 @@ func (q *Queries) CreateDriver(ctx context.Context, phone string) (Driver, error
 		&i.Model,
 		&i.Color,
 		&i.LicensePlate,
-		&i.Status,
 		&i.CreatedAt,
 	)
 	return i, err
@@ -55,7 +54,7 @@ func (q *Queries) DeleteDriver(ctx context.Context, id int64) error {
 }
 
 const getDriver = `-- name: GetDriver :one
-SELECT id, phone, name, login_code, year, make, model, color, license_plate, status, created_at FROM drivers
+SELECT id, phone, name, login_code, year, make, model, color, license_plate, created_at FROM drivers
 WHERE id = $1 LIMIT 1
 `
 
@@ -72,14 +71,13 @@ func (q *Queries) GetDriver(ctx context.Context, id int64) (Driver, error) {
 		&i.Model,
 		&i.Color,
 		&i.LicensePlate,
-		&i.Status,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getDriverByPhone = `-- name: GetDriverByPhone :one
-SELECT id, phone, name, login_code, year, make, model, color, license_plate, status, created_at FROM drivers
+SELECT id, phone, name, login_code, year, make, model, color, license_plate, created_at FROM drivers
 WHERE phone = $1 LIMIT 1
 `
 
@@ -96,14 +94,13 @@ func (q *Queries) GetDriverByPhone(ctx context.Context, phone string) (Driver, e
 		&i.Model,
 		&i.Color,
 		&i.LicensePlate,
-		&i.Status,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const listDrivers = `-- name: ListDrivers :many
-SELECT id, phone, name, login_code, year, make, model, color, license_plate, status, created_at FROM drivers
+SELECT id, phone, name, login_code, year, make, model, color, license_plate, created_at FROM drivers
 ORDER BY id
 LIMIT $1
 OFFSET $2
@@ -133,7 +130,6 @@ func (q *Queries) ListDrivers(ctx context.Context, arg ListDriversParams) ([]Dri
 			&i.Model,
 			&i.Color,
 			&i.LicensePlate,
-			&i.Status,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -153,7 +149,7 @@ const updateDriverLoginCode = `-- name: UpdateDriverLoginCode :one
 UPDATE drivers
 SET login_code = $2
 WHERE id = $1
-RETURNING id, phone, name, login_code, year, make, model, color, license_plate, status, created_at
+RETURNING id, phone, name, login_code, year, make, model, color, license_plate, created_at
 `
 
 type UpdateDriverLoginCodeParams struct {
@@ -174,7 +170,6 @@ func (q *Queries) UpdateDriverLoginCode(ctx context.Context, arg UpdateDriverLog
 		&i.Model,
 		&i.Color,
 		&i.LicensePlate,
-		&i.Status,
 		&i.CreatedAt,
 	)
 	return i, err
