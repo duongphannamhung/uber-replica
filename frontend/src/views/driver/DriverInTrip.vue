@@ -123,6 +123,8 @@
     // const direction = useDirectionStore()
   
     onMounted(async () => {
+        await location.updateCurrentLocation()
+        
         await axios.get(`http://localhost:6969/api/trip/${localStorage.getItem('current_trip_id')}`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('driver-token')}`
@@ -136,10 +138,7 @@
         }).catch((error) => {
             console.error(error)
             alert(error.response.data.message)
-        })
-
-        // lets get the users current location
-        await location.updateCurrentLocation()
+        }) 
   
         // draw a path on the map
         gMap.value.$mapPromise.then((mapObject) => {
