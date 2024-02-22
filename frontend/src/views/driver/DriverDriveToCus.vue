@@ -171,7 +171,7 @@
     if (getDistanceFromLatLonInKm(location.current.geometry.lat, location.current.geometry.lng, customer_location.geometry.lat, customer_location.geometry.lng) < 100) {
       clearInterval(driver_come_interval)
 
-      await sleep(3000);
+      await sleep(7000);
 
       router.push({
           name : 'driver-in-trip'

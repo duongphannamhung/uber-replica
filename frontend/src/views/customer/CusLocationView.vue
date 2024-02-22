@@ -1,6 +1,6 @@
 <template>
     <div class="pt-16">
-        <h1 class="text-3xl font-semibold mb-4">Bạn muốn đi đâu?</h1>
+        <h1 class="text-3xl font-semibold mb-4 text-center">Bạn muốn đi đâu?</h1>
         <form action="#" @submit.prevent="">
             <div class="overflow-hidden shadow sm:rounded-md max-w-sm mx-auto text-left">
                 <div class="bg-white px-4 py-5 sm:p-6">

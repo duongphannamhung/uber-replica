@@ -150,6 +150,12 @@
             })
         })
     })
+
+    const goToMessage = async () => {
+      router.push({
+          name : 'cus-message-in-trip'
+      })
+  }
   
   </script>
   

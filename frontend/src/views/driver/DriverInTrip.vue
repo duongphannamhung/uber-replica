@@ -106,7 +106,7 @@
     // import mapStyles from '../mapStyles'
     const router = useRouter()
     const location = useLocationStore()
-    const destination = ref({address: '', lat: null, lng: null})
+    const destination = ref({address: '', geometry: { lat: null, lng: null}})
     // const trip = useTripStore()
     const conn = inject('websocketStore').conn
   
@@ -133,8 +133,8 @@
             customer_location.geometry.lat = resp.data.origin_latitude
             customer_location.geometry.lng = resp.data.origin_longitude
             destination.value.address = resp.data.destination_name
-            destination.value.lat = resp.data.destination_latitude
-            destination.value.lng = resp.data.destination_longitude
+            destination.value.geometry.lat = resp.data.destination_latitude
+            destination.value.geometry.lng = resp.data.destination_longitude
         }).catch((error) => {
             console.error(error)
             alert(error.response.data.message)
@@ -145,7 +145,7 @@
             // eslint-disable-next-line
             let currentPoint = new google.maps.LatLng(location.current.geometry),
             // eslint-disable-next-line
-                destinationPoint = new google.maps.LatLng(location.destination.geometry),
+                destinationPoint = new google.maps.LatLng(destination.value.geometry),
             // eslint-disable-next-line
                 directionsService = new google.maps.DirectionsService,
             // eslint-disable-next-line

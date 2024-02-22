@@ -4,7 +4,7 @@
         <div 
             id="BackBtn" 
             class="fixed z-50 rounded-full bg-white p-1 top-8 left-4"
-            @click="goBack()"
+            @click="goBack"
             >
             <ArrowLeftIcon :size="40" />
         </div>
@@ -94,6 +94,12 @@
                 conn.send(textareaRef.value.value);
                 textareaRef.value.value = '';
             }
+          
+            const goBack = () => {
+                router.push({
+                    name : 'cus-waiting-driver-arrive'
+                })
+              }
 
             watchEffect(() => {
                 if (conn === null) {
@@ -130,14 +136,14 @@
                 conn.onerror = () => {}
                 conn.onopen = () => {}
             })
-            
+
             return {                   
                 textareaRef,
                 messages,
                 conn,
-                sendMessage
+                sendMessage,
+                goBack
             }
         }
     }
-
 </script>

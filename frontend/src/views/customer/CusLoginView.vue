@@ -1,6 +1,6 @@
 <template>
     <div class="pt-16">
-        <h1 class="text-3xl font-semibold mb-4">[Customer] Nhập số điện thoại của bạn</h1>
+        <h1 class="text-3xl font-semibold mb-4 text-center">[Customer] Nhập số điện thoại của bạn</h1>
         <form v-if="!waitingOnVerification" action="#" @submit.prevent="handleLogin">
             <div class="overflow-hidden shadow sm:rounded-md max-w-sm mx-auto text-left">
                 <div class="bg-white px-4 py-5 sm:p-6">
