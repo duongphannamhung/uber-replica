@@ -89,7 +89,7 @@ const handleVerification = () => {
         })
         .catch((error) => {
             console.error(error)
-            alert(error.response.data.message)
+            alert("Mã OTP không đúng. Vui lòng thử lại.")
         })
 }
 </script>

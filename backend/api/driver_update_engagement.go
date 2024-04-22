@@ -166,3 +166,15 @@ func (server *Server) updateTripFare(ctx *gin.Context) {
 	})
 	return
 }
+
+// type deleteEngagementRequest struct {
+// 	DriverId string `json:"driver_id" binding:"required"`
+// }
+
+// func (server *Server) driverDeleteEngagement(ctx *gin.Context) {
+// 	var request deleteEngagementRequest
+// 	if err := ctx.ShouldBindJSON(&request); err != nil {
+// 		ctx.JSON(400, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// }

@@ -123,6 +123,9 @@
       // lets get the driver current location
       await location.updateCurrentLocation()
 
+      while (!gMap.value) {
+        await sleep(1000);
+      }
       // draw a path on the map
       gMap.value.$mapPromise.then((mapObject) => {
           // eslint-disable-next-line

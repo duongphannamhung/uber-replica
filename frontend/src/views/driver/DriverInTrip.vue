@@ -120,6 +120,12 @@
         }
     })
 
+    var sleepSetTimeout_ctrl;
+
+    function sleep(ms) {
+        clearInterval(sleepSetTimeout_ctrl);
+        return new Promise(resolve => sleepSetTimeout_ctrl = setTimeout(resolve, ms));
+    }
     // const direction = useDirectionStore()
   
     onMounted(async () => {
@@ -140,6 +146,10 @@
             alert(error.response.data.message)
         }) 
   
+        while (!gMap.value) {
+          await sleep(1000);
+        }
+
         // draw a path on the map
         gMap.value.$mapPromise.then((mapObject) => {
             // eslint-disable-next-line

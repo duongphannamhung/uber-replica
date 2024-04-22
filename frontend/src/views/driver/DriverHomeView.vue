@@ -72,7 +72,9 @@
     const toggle = () => {
         checked.value = !checked.value;
         if (checked.value) {
-          intervalId = setInterval(updateEngagement, 1000)
+          intervalId = setInterval(() => {
+            updateEngagement(getEngagement());
+          }, 1000)
           intervalGetStatus = setInterval(getDriverStatus, 1000)
         } else {
           clearInterval(intervalId);
@@ -80,7 +82,7 @@
           intervalId = null;
           intervalGetStatus = null;
 
-          updateEngagement();
+          updateEngagement(getEngagement());
         }
     }
 
@@ -95,8 +97,8 @@
       }
     }
 
-    const updateEngagement = async () => {
-      await axios.post('http://localhost:6969/api/driver/update-engagement', getEngagement(), {
+    const updateEngagement = async (engagementInfo) => {
+      await axios.post('http://localhost:6969/api/driver/update-engagement', engagementInfo, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('driver-token')}`
         }
@@ -150,9 +152,29 @@
       })
   }
 
-    onMounted(async () => {
-      await location.updateCurrentLocation()
+    // window.addEventListener('beforeunload', function (e) {
+      // if (intervalId) {
+      //   clearInterval(intervalId);
+      //   clearInterval(intervalGetStatus);
+      //   intervalId = null;
+      //   intervalGetStatus = null;
+      //   updateEngagement();
+      // }
+
+  onMounted(async () => {
+    await location.updateCurrentLocation()
+
+    window.addEventListener('beforeunload', function () {
+      updateEngagement({
+        driver_id: localStorage.getItem('current_driver_id'),
+        driver_phone: localStorage.getItem('current_driver_phone'),
+        status: 1,
+        lat : location.current.geometry.lat,
+        lng : location.current.geometry.lng,
+        geo_id : 1 // update geo_id later
+      }) 
     })
+  })
   </script>
 
 <style scoped>
