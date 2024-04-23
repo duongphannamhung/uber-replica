@@ -50,6 +50,7 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 	authDriverRoutes.GET("/api/driver/current-status", server.currentDriverStatus)
 	authDriverRoutes.POST("/api/driver/update-trip-fare", server.updateTripFare)
 	authDriverRoutes.POST("/api/driver/update-engagement", server.driverUpdateEngagement)
+	authDriverRoutes.POST("/api/driver/finish-engagement", server.finishEngagement)
 
 	hub := ws.NewHub()
 	wsHandler := ws.NewHandler(hub)

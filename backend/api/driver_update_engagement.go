@@ -167,14 +167,79 @@ func (server *Server) updateTripFare(ctx *gin.Context) {
 	return
 }
 
-// type deleteEngagementRequest struct {
-// 	DriverId string `json:"driver_id" binding:"required"`
-// }
+type DoneEngagementRequest struct {
+	DriverPhone string `json:"driver_phone" binding:"required"`
+	DriverId    string `json:"driver_id" binding:"required"`
+	TripId      string `json:"trip_id" binding:"required"`
+}
 
-// func (server *Server) driverDeleteEngagement(ctx *gin.Context) {
-// 	var request deleteEngagementRequest
-// 	if err := ctx.ShouldBindJSON(&request); err != nil {
-// 		ctx.JSON(400, gin.H{"error": err.Error()})
-// 		return
-// 	}
-// }
+type DoneEngagementResponse struct {
+	DriverId        string `json:"driver_id" binding:"required"`
+	TripId          string `json:"trip_id" binding:"required"`
+	Fare            int32  `json:"fare" binding:"required"`
+	DestinationName string `json:"destination_name" binding:"required"`
+	TripCreatedAt   string `json:"trip_created_at" binding:"required"`
+}
+
+func (server *Server) finishEngagement(ctx *gin.Context) {
+	var request DoneEngagementRequest
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	if authPayload.PhoneNumber != request.DriverPhone {
+		ctx.JSON(http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	driver_id, err := strconv.ParseInt(request.DriverId, 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	_, err = server.store.UpdateEngagementStatus(
+		ctx, db.UpdateEngagementStatusParams{
+			DriverID: int32(driver_id),
+			Status:   1,
+		})
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	trip_id, err := strconv.ParseInt(request.TripId, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	_, err = server.store.UpdateEngagementTrip(
+		ctx,
+		db.UpdateEngagementTripParams{
+			DriverID: int32(driver_id),
+			InTrip:   sql.NullInt32{},
+		},
+	)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	trip, err := server.store.GetTrip(ctx, trip_id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, DoneEngagementResponse{
+		DriverId:        request.DriverId,
+		TripId:          request.TripId,
+		Fare:            trip.Fare.Int32,
+		DestinationName: trip.DestinationName,
+		TripCreatedAt:   trip.CreatedAt.String(),
+	})
+}
