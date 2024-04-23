@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	"net/http"
 	"strconv"
 	db "uber-replica/db/sqlc"
@@ -66,6 +67,23 @@ func (server *Server) createTripBike(ctx *gin.Context) {
 	return
 }
 
+type getTripInfoResponse struct {
+	TripId                  int64           `json:"trip_id"`
+	UserID                  int64           `json:"user_id"`
+	DriverID                int32           `json:"driver_id"`
+	ServiceType             int32           `json:"service_type"`
+	IsStarted               bool            `json:"is_started"`
+	OriginLatitude          float64         `json:"origin_latitude"`
+	OriginLongitude         float64         `json:"origin_longitude"`
+	DestinationLatitude     float64         `json:"destination_latitude"`
+	DestinationLongitude    float64         `json:"destination_longitude"`
+	DestinationName         string          `json:"destination_name"`
+	DriverLocationLatitude  sql.NullFloat64 `json:"driver_location_latitude"`
+	DriverLocationLongitude sql.NullFloat64 `json:"driver_location_longitude"`
+	Fare                    int32           `json:"fare"`
+	TripCreatedAt           string          `json:"trip_created_at"`
+}
+
 func (server *Server) getTripInfo(ctx *gin.Context) {
 	tripId, err := strconv.ParseInt(ctx.Param("tripId"), 10, 64)
 	if err != nil {
@@ -79,6 +97,21 @@ func (server *Server) getTripInfo(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, trip)
+	ctx.JSON(http.StatusOK, getTripInfoResponse{
+		TripId:                  trip.ID,
+		UserID:                  trip.UserID,
+		DriverID:                trip.DriverID.Int32,
+		ServiceType:             trip.ServiceType,
+		IsStarted:               trip.IsStarted,
+		OriginLatitude:          trip.OriginLatitude,
+		OriginLongitude:         trip.OriginLongitude,
+		DestinationLatitude:     trip.DestinationLatitude,
+		DestinationLongitude:    trip.DestinationLongitude,
+		DestinationName:         trip.DestinationName,
+		DriverLocationLatitude:  trip.DriverLocationLatitude,
+		DriverLocationLongitude: trip.DriverLocationLongitude,
+		Fare:                    trip.Fare.Int32,
+		TripCreatedAt:           trip.CreatedAt.String(),
+	})
 	return
 }

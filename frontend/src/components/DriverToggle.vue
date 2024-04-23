@@ -1,7 +1,7 @@
 <template>
     <div>
         <h2 class="mb-4"></h2>
-        <Toggle v-model="value" class="blue-shadow"/>
+        <Toggle v-model="isToggleOn" class="blue-shadow"/>
     </div>
 </template>
           
@@ -13,8 +13,20 @@ export default {
     },
     data() {
         return {
-            value: false
+            isToggleOn: null,
         }
+    },
+    methods: {
+        checkCondition() {
+        if (localStorage.getItem('after_trip') == 'true') {
+            this.isToggleOn = true;
+        } else {
+            this.isToggleOn = false;
+        }
+    },
+    },
+    mounted() {
+        this.checkCondition()
     }
 }
 </script>
