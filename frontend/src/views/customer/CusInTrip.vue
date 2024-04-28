@@ -1,15 +1,5 @@
 <template>
     <div>
-  
-      <!-- <div 
-        id="BackBtn" 
-        class="absolute z-50 rounded-full bg-white p-1 top-8 left-4"
-        @click="goBack()"
-      >
-        <ArrowLeftIcon :size="40" />
-      </div> -->
-      
-      <!-- <div id="map" > -->
       <GMapMap
           :zoom="4" :center="location.current.geometry"
           :options="{
