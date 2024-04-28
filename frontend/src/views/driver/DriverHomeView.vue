@@ -1,5 +1,9 @@
 <template>
   <div>
+    <div v-if="!isToggleOn" style="height: 5vh; background-color: darkblue; color: white; display: flex; align-items: center; justify-content: center;">
+      Bạn đang offline
+    </div>
+
     <GMapMap v-if='isToggleOn'
         :zoom="15" 
         :center="location.current.geometry"
@@ -12,7 +16,7 @@
           mapTypeControl : false
         }"
         ref="gMap"
-        style="width: 100%; height: 512px;">
+        style="position: absolute; height: 100vh; width: 100%;">
         <GMapMarker :position="location.current.geometry"/>
     </GMapMap>
 
@@ -37,15 +41,25 @@
           ]
         }"
         ref="gMap"
-        style="width: 100%; height: 512px;">
+        style="position: absolute; top: 5%; height: 95vh; width: 100%;">
     </GMapMap>
 
     <div class="toggle-container">
           <DriverToggle v-model="isToggleOn" @click="toggle()"/>
     </div>
+    <div class="icon-bar" style="position: absolute; background-color: white; bottom: 0vh; height: 10vh; width: 100%; display: flex; justify-content: space-around; align-items: center;">
+      <button style="background-color: white; color: black; border: none; padding: 10px;"> <i class="material-icons">home</i> </button> 
+      <div style="border-left: 1px solid black; height: 100%;"></div>
+      <button style="background-color: white; color: black; border: none; padding: 10px;"> <i class="material-icons">search</i> </button> 
+      <div style="border-left: 1px solid black; height: 100%;"></div>
+      <button style="background-color: white; color: black; border: none; padding: 10px;"> <i class="material-icons">notifications</i> </button> 
+      <div style="border-left: 1px solid black; height: 100%;"></div>
+      <button style="background-color: white; color: black; border: none; padding: 10px;"> <i class="material-icons">settings</i> </button> 
+      <div style="border-left: 1px solid black; height: 100%;"></div>
+      <button style="background-color: white; color: black; border: none; padding: 10px;"> <i class="material-icons">person</i> </button>
+    </div>
   </div>
 </template>
-  
   <script setup>
     import axios from 'axios';
     import { onMounted, ref } from 'vue'

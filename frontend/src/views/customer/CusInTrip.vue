@@ -21,32 +21,30 @@
             mapTypeControl : false
           }"
           ref="gMap"
-          style="width: 100%; height: 256px;">
+          style="width: 100%; height: 65vh;">
       </GMapMap>
-  
-      <div id="DriverInfo" class=" w-full">
-        <div class="w-full h-2 border-t"></div>
-        <div class="w-full text-center border-t-2 p-1.5 text-gray-700 text-lg font-semibold">
-          Bạn đang đang trên đường đến {{ location.destination.name }}
-        </div>
-        <!-- <div class="scrollSection">
-          <div 
-            v-for="(item, index) in items" 
-            :key="index" 
-            :style="{ backgroundColor: selectedItemIndex === index ? 'rgb(237, 237, 237)' : 'white' }" 
-            @click="selectItem(index)" class="flex items-center px-4 py-5">
-              <img width="75" :src="item.image">
-              <div class="w-full ml-3">
-                <div class="flex items-center justify-between">
-                  <div class="text-2xl mb-1">{{ item.name }}</div>
-                  <div class="text-xl">{{ calculatePrice(item.priceMultiplier, distance.value) }}</div>
-                </div>
-                <div class="text-gray-500">{{ item.description }}</div>
-              </div> 
+
+    <div id="DriverInfo" class="w-full">
+      <div class="w-full h-2 border-t"></div>
+      <div class="w-full text-center border-t-2 p-1.5 text-gray-700 text-lg font-semibold">
+        Bạn đang đang trên đường đến {{ location.destination.name }}
+      </div>
+      <div class="border-b"></div>
+      <div class="flex justify-between items-center mt-3">
+        <div>
+          <p class="font-bold text-lg ml-5">{{ driver_info.name }}</p>          
+          <p class="ml-5">{{ driver_info.carLabel }} | {{ driver_info.carName }}</p>
+          <div style="background-color: lightgray; padding: 4px; width: 125px; margin-left: 20px;">
+            <p style="font-weight: 600;">{{ driver_info.carNumber }}</p>
           </div>
-        </div> -->
-  
-        <div 
+        </div>
+        <div>
+          <img :src="driver_info.image" alt="Driver Image" class="rounded-full w-20 h-20 mr-10">
+        </div>
+      </div>
+    </div>
+
+      <div 
           class="
             flex 
             items-center 
@@ -58,24 +56,43 @@
             absolute 
             bottom-0 
             shadow-inner
-          " @click="goToMessage()"
+          " 
         >
-          <button  
-            class="
-              bg-black 
-              text-2xl 
-              text-white
-              py-4 
-              px-4 
-              rounded-sm
-              w-full
-            "
-          >
-            Message
-          </button>
-        </div>
-  
-      </div>
+      <div class="flex justify-around w-full">
+            <button  
+                class="
+                border-4 border-black
+                bg-white
+                text-2xl 
+                text-black
+                py-2 
+                px-4 
+                rounded-sm
+                w-1/2
+                mr-2
+                " 
+            >
+                Báo cáo
+            </button>
+
+            <button 
+                class="
+                bg-black 
+                text-2xl 
+                text-white
+                py-2
+                px-4 
+                rounded-sm
+                w-1/2
+                ml-2
+                "
+                @click="goToMessage()"
+            >
+                Tin nhắn
+            </button>
+          </div>
+    </div>
+
     </div>
   </template>
   
@@ -94,6 +111,14 @@
   
     const gMap = ref(null)
     
+    const driver_info = ref({
+      name: 'DƯƠNG PHAN NAM HƯNG',
+      carNumber: '59C1-123.45',
+      carName: 'SH',
+      carLabel: 'Honda',
+      image: 'img/logo/driver.jpg'
+    })
+
     var sleepSetTimeout_ctrl;
 
     function sleep(ms) {

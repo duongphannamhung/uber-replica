@@ -64,11 +64,16 @@
             }
 
             const goBack = () => {
+              if (localStorage.getItem('driver_arrived') == 'true') {
+                router.push({
+                  name: 'driver-in-trip'
+                })
+              }
+              else {
                 router.push({
                     name : 'driver-drive-to-cus'
                 })
-                // direction.pickup = ''
-                // direction.destination = ''
+              }
             }
 
             const m = ref(null);

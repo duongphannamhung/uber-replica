@@ -21,30 +21,28 @@
             mapTypeControl : false
           }"
           ref="gMap"
-          style="width: 100%; height: 256px;">
+          style="width: 100%; height: 65vh;">
       </GMapMap>
-  
-      <div id="CustomerInfo" class=" w-full">
+
+      <div id="CustomerInfo" class="w-full">
         <div class="w-full h-2 border-t"></div>
         <div class="w-full text-center border-t-2 p-1.5 text-gray-700 text-lg font-semibold">
-          Đang trên đường đến {{ destination.address }}
+            Đang trên đường đến {{ destination.address }}
         </div>
-        <!-- <div class="scrollSection">
-          <div 
-            v-for="(item, index) in items" 
-            :key="index" 
-            :style="{ backgroundColor: selectedItemIndex === index ? 'rgb(237, 237, 237)' : 'white' }" 
-            @click="selectItem(index)" class="flex items-center px-4 py-5">
-              <img width="75" :src="item.image">
-              <div class="w-full ml-3">
-                <div class="flex items-center justify-between">
-                  <div class="text-2xl mb-1">{{ item.name }}</div>
-                  <div class="text-xl">{{ calculatePrice(item.priceMultiplier, distance.value) }}</div>
-                </div>
-                <div class="text-gray-500">{{ item.description }}</div>
-              </div> 
+        <div class="border-b"></div>
+        <div class="flex justify-between items-center mt-3">
+          <div>
+            <p class="font-bold text-lg ml-5">{{ customer_info.address }}</p>
+            <p class="ml-5">{{ customer_info.name }}</p>
+            <div style="background-color: lightgoldenrodyellow; padding: 4px; width: 175px; margin-left: 20px;">
+              <p style="font-weight: 600;">Tiền mặt: {{ convertPriceToVND(customer_info.fare) }}</p>
           </div>
-        </div> -->
+          </div>
+          <div>
+            <img :src="customer_info.image" alt="Customer Image" class="rounded-full w-20 h-20 mr-10">
+          </div>
+        </div>
+      </div>  
   
         <div 
           class="
@@ -63,9 +61,10 @@
             <div class="flex justify-around w-full">
             <button  
                 class="
-                bg-black 
+                border-4 border-black
+                bg-white
                 text-2xl 
-                text-white
+                text-black
                 py-2 
                 px-4 
                 rounded-sm
@@ -92,8 +91,6 @@
             </button>
             </div>
         </div>
-  
-      </div>
     </div>
   </template>
   
@@ -122,6 +119,28 @@
 
     var sleepSetTimeout_ctrl;
 
+    const customer_info = ref({
+      name: 'Dương Phan Nam Hưng',
+      address: '7/42 Thành Thái, Q.10, HCM', // TODO: get real info
+      image: 'https://www.w3schools.com/howto/img_avatar.png',
+      fare: 0,
+    })
+
+    const convertPriceToVND = (price) => {
+      let k = 0
+      price = price.toString()
+      let result = ''
+      for (let i = price.length - 1; i >= 0; i--) {
+        if (k % 3 == 0 && k != 0) {
+          result = price[i] + '.' + result
+        } else {
+          result = price[i] + result
+        }
+        k++
+      }
+      return result + ' đ'
+    }
+
     function sleep(ms) {
         clearInterval(sleepSetTimeout_ctrl);
         return new Promise(resolve => sleepSetTimeout_ctrl = setTimeout(resolve, ms));
@@ -141,6 +160,7 @@
             destination.value.address = resp.data.destination_name
             destination.value.geometry.lat = resp.data.destination_latitude
             destination.value.geometry.lng = resp.data.destination_longitude
+            customer_info.value.fare = resp.data.fare
         }).catch((error) => {
             console.error(error)
             alert(error.response.data.message)
@@ -192,7 +212,7 @@
           alert("Ws conn null. Can't completed trip")
           return
         }
-
+        
         conn.send('finishline-@123!(*234kh219871233hadsfh')
         router.push({
             name : 'driver-complete-trip'

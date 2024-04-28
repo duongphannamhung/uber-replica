@@ -96,10 +96,17 @@
             }
           
             const goBack = () => {
+              if (localStorage.getItem('driver_arrived') == 'true') {
+                router.push({
+                  name: 'cus-in-trip'
+                })
+              }
+              else {
                 router.push({
                     name : 'cus-waiting-driver-arrive'
                 })
               }
+            }
 
             watchEffect(() => {
                 if (conn === null) {

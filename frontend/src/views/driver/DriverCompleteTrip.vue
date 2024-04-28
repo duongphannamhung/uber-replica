@@ -80,6 +80,8 @@
     })
 
     const backHome = async () => {
+        localStorage.removeItem('driver_arrived')
+        localStorage.removeItem('current_trip_id')
         localStorage.setItem('after_trip', true)
         router.push({
             name : 'driver-home'
