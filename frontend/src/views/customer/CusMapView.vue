@@ -252,7 +252,7 @@
       departure_name: location.departure.display_name,
       // eslint-disable-next-line
       destination_point : new google.maps.LatLng(location.destination.geometry),
-      destination_name: location.destination.name,
+      destination_name: location.destination.address,
     }
 
     if (vehicleName == "UrepBike") {

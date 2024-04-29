@@ -233,7 +233,7 @@
       return address
     }
     else {
-      return list_address[0] + ', ' + list_address[1] + ', ' + list_address[2] + '...'
+      return list_address[0] + ', ' + list_address[1] + ', ' + list_address[2]
     }
   }
 

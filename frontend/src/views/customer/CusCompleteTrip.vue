@@ -81,9 +81,9 @@
                 <div class="flex flex-col">
                 <div class="flex items-center">
                     <img src="img/logo/destination_point.png" alt="Destination Icon" class="mr-2 w-6 h-6">
-                    <p class="font-bold text-lg">{{ metadata.destination_name }}</p>
+                    <p class="font-bold text-lg">{{ beautifulizeAddress(metadata.destination_name) }}</p>
                     </div>
-                    <p class="text-lg ml-8">Quận 1, Hồ Chí Minh</p>
+                    <p class="text-lg ml-8">{{ tailAddress(metadata.destination_name) }}</p>
                 </div>
                 </div>
         </div>
@@ -225,7 +225,12 @@
             return address
         }
         else {
-            return list_address[list_address.length - 2] + ', ' + list_address[list_address.length - 1]
+            if (Number.isInteger(Number(list_address[list_address.length - 2]))) {
+                return list_address[list_address.length - 3] + ', ' + list_address[list_address.length - 1]
+            }
+            else {
+                return list_address[list_address.length - 2] + ', ' + list_address[list_address.length - 1]
+            }
         }
     }
 

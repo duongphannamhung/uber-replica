@@ -7,11 +7,12 @@ import (
 )
 
 type Config struct {
-	DBDriver            string        `mapstructure:"DB_DRIVER"`
-	DBSource            string        `mapstructure:"DB_SOURCE"`
-	ServerAddress       string        `mapstructure:"SERVER_ADDRESS"`
-	TokenSymmetricKey   string        `mapstructure:"TOKEN_SYMMETRIC_KEY"`
-	AccessTokenDuration time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
+	DBDriver                  string        `mapstructure:"DB_DRIVER"`
+	DBSource                  string        `mapstructure:"DB_SOURCE"`
+	ServerAddress             string        `mapstructure:"SERVER_ADDRESS"`
+	TokenSymmetricKey         string        `mapstructure:"TOKEN_SYMMETRIC_KEY"`
+	AccessTokenDurationDriver time.Duration `mapstructure:"ACCESS_TOKEN_DURATION_DRIVER"`
+	AccessTokenDurationUser   time.Duration `mapstructure:"ACCESS_TOKEN_DURATION_USER"`
 
 	TwiolioAccountSid string `mapstructure:"TWILIO_ACCOUNT_SID"`
 	TwiolioAuthToken  string `mapstructure:"TWILIO_AUTH_TOKEN"`
