@@ -27,12 +27,12 @@
       <div id="CustomerInfo" class="w-full">
         <div class="w-full h-2 border-t"></div>
         <div class="w-full text-center border-t-2 p-1.5 text-gray-700 text-lg font-semibold">
-            Đang trên đường đến {{ destination.address }}
+            Di chuyển đến điểm đến
         </div>
         <div class="border-b"></div>
         <div class="flex justify-between items-center mt-3">
           <div>
-            <p class="font-bold text-lg ml-5">{{ beautifulizeAddress(customer_info.address) }}</p>
+            <p class="font-bold text-lg ml-5">{{ beautifulizeAddress(destination.address) }}</p>
             <p class="ml-5">{{ customer_info.name }}</p>
             <div style="background-color: lightgoldenrodyellow; padding: 4px; width: 175px; margin-left: 20px;">
               <p style="font-weight: 600;">Tiền mặt: {{ convertPriceToVND(customer_info.fare) }}</p>
@@ -227,7 +227,7 @@
         return address
       }
       else {
-        return list_address[0] + ', ' + list_address[1] + ', ' + list_address[2] + '...'
+        return list_address[0] + ', ' + list_address[1] + ', ' + list_address[2]
       }
     }
 

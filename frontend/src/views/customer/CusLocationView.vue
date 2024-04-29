@@ -10,7 +10,7 @@
                     <GMapAutocomplete
                     v-else
                     placeholder="Nơi đi"
-                    @place_changed="handleLocationChanged"
+                    @place_changed="handleDepartureChanged"
                     class="mt-1 block w-full px-3 py-2 rounded-md border border-gray-300 shadow-sm focus:border-black focus:outline-none">
                     </GMapAutocomplete>
                 </div>
@@ -45,8 +45,32 @@ const router = useRouter()
 
 const showLocationAutocomplete = ref(false)
 
+const handleDepartureChanged = async (e) => {
+    console.log('handleDepartureChanged', e)
+    location.$patch({
+        departure: {
+            geometry: {
+                lat: e.geometry.location.lat(),
+                lng: e.geometry.location.lng()
+            }
+        }
+    })
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${e.geometry.location.lat()}&lon=${e.geometry.location.lng()}&format=json`, {
+            headers: {
+              'User-agent': navigator.userAgent,
+            }
+          });
+        response.json().then(data => {
+            location.$patch({
+                departure: {
+                    display_name: data.display_name
+                }
+            })
+        })
+    }
+
 const handleLocationChanged = (e) => {
-    console.log('handleLocationChanged', e)
+    // console.log('handleLocationChanged', e)
     location.$patch({
         destination: {
             name: e.name,

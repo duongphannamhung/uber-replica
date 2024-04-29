@@ -109,7 +109,7 @@ func (server *Server) verifyDriverLoginPhone(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid OTP"})
 		return
 	}
-	accessToken, err := server.tokenMaker.CreateToken(user.Phone, server.config.AccessTokenDuration)
+	accessToken, err := server.tokenMaker.CreateToken(user.Phone, server.config.AccessTokenDurationDriver)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 	}
