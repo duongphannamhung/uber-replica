@@ -177,6 +177,7 @@ type DoneEngagementResponse struct {
 	DriverId        string `json:"driver_id" binding:"required"`
 	TripId          string `json:"trip_id" binding:"required"`
 	Fare            int32  `json:"fare" binding:"required"`
+	DepartureName   string `json:"departure_name" binding:"required"`
 	DestinationName string `json:"destination_name" binding:"required"`
 	TripCreatedAt   string `json:"trip_created_at" binding:"required"`
 }
@@ -239,6 +240,7 @@ func (server *Server) finishEngagement(ctx *gin.Context) {
 		DriverId:        request.DriverId,
 		TripId:          request.TripId,
 		Fare:            trip.Fare.Int32,
+		DepartureName:   trip.DepartureName,
 		DestinationName: trip.DestinationName,
 		TripCreatedAt:   trip.CreatedAt.String(),
 	})

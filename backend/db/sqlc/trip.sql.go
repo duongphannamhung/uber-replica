@@ -15,22 +15,24 @@ INSERT INTO trips (
     user_id,
     driver_id,
     service_type,
-    origin_latitude,
-    origin_longitude,
+    departure_latitude,
+    departure_longitude,
+    departure_name,
     destination_latitude,
     destination_longitude,
     destination_name
 ) VALUES (
-    $1, NULL, $2, $3, $4, $5, $6, $7
+    $1, NULL, $2, $3, $4, $5, $6, $7, $8
 )
-RETURNING id, user_id, driver_id, service_type, is_started, origin_latitude, origin_longitude, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, fare, created_at
+RETURNING id, user_id, driver_id, service_type, is_started, departure_latitude, departure_longitude, departure_name, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, fare, created_at
 `
 
 type CreateTripParams struct {
 	UserID               int64   `json:"user_id"`
 	ServiceType          int32   `json:"service_type"`
-	OriginLatitude       float64 `json:"origin_latitude"`
-	OriginLongitude      float64 `json:"origin_longitude"`
+	DepartureLatitude    float64 `json:"departure_latitude"`
+	DepartureLongitude   float64 `json:"departure_longitude"`
+	DepartureName        string  `json:"departure_name"`
 	DestinationLatitude  float64 `json:"destination_latitude"`
 	DestinationLongitude float64 `json:"destination_longitude"`
 	DestinationName      string  `json:"destination_name"`
@@ -40,8 +42,9 @@ func (q *Queries) CreateTrip(ctx context.Context, arg CreateTripParams) (Trip, e
 	row := q.db.QueryRowContext(ctx, createTrip,
 		arg.UserID,
 		arg.ServiceType,
-		arg.OriginLatitude,
-		arg.OriginLongitude,
+		arg.DepartureLatitude,
+		arg.DepartureLongitude,
+		arg.DepartureName,
 		arg.DestinationLatitude,
 		arg.DestinationLongitude,
 		arg.DestinationName,
@@ -53,8 +56,9 @@ func (q *Queries) CreateTrip(ctx context.Context, arg CreateTripParams) (Trip, e
 		&i.DriverID,
 		&i.ServiceType,
 		&i.IsStarted,
-		&i.OriginLatitude,
-		&i.OriginLongitude,
+		&i.DepartureLatitude,
+		&i.DepartureLongitude,
+		&i.DepartureName,
 		&i.DestinationLatitude,
 		&i.DestinationLongitude,
 		&i.DestinationName,
@@ -83,7 +87,7 @@ func (q *Queries) DeleteTrip(ctx context.Context, id int64) error {
 }
 
 const getTrip = `-- name: GetTrip :one
-SELECT id, user_id, driver_id, service_type, is_started, origin_latitude, origin_longitude, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, fare, created_at FROM trips
+SELECT id, user_id, driver_id, service_type, is_started, departure_latitude, departure_longitude, departure_name, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, fare, created_at FROM trips
 WHERE id = $1 LIMIT 1
 `
 
@@ -96,8 +100,9 @@ func (q *Queries) GetTrip(ctx context.Context, id int64) (Trip, error) {
 		&i.DriverID,
 		&i.ServiceType,
 		&i.IsStarted,
-		&i.OriginLatitude,
-		&i.OriginLongitude,
+		&i.DepartureLatitude,
+		&i.DepartureLongitude,
+		&i.DepartureName,
 		&i.DestinationLatitude,
 		&i.DestinationLongitude,
 		&i.DestinationName,
@@ -110,7 +115,7 @@ func (q *Queries) GetTrip(ctx context.Context, id int64) (Trip, error) {
 }
 
 const listTrips = `-- name: ListTrips :many
-SELECT id, user_id, driver_id, service_type, is_started, origin_latitude, origin_longitude, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, fare, created_at FROM trips
+SELECT id, user_id, driver_id, service_type, is_started, departure_latitude, departure_longitude, departure_name, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, fare, created_at FROM trips
 ORDER BY id
 LIMIT $1
 OFFSET $2
@@ -136,8 +141,9 @@ func (q *Queries) ListTrips(ctx context.Context, arg ListTripsParams) ([]Trip, e
 			&i.DriverID,
 			&i.ServiceType,
 			&i.IsStarted,
-			&i.OriginLatitude,
-			&i.OriginLongitude,
+			&i.DepartureLatitude,
+			&i.DepartureLongitude,
+			&i.DepartureName,
 			&i.DestinationLatitude,
 			&i.DestinationLongitude,
 			&i.DestinationName,
@@ -167,7 +173,7 @@ SET driver_id = $2,
     driver_location_latitude = $4,
     driver_location_longitude = $5
 WHERE id = $1
-RETURNING id, user_id, driver_id, service_type, is_started, origin_latitude, origin_longitude, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, fare, created_at
+RETURNING id, user_id, driver_id, service_type, is_started, departure_latitude, departure_longitude, departure_name, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, fare, created_at
 `
 
 type UpdateStartTripParams struct {
@@ -193,8 +199,9 @@ func (q *Queries) UpdateStartTrip(ctx context.Context, arg UpdateStartTripParams
 		&i.DriverID,
 		&i.ServiceType,
 		&i.IsStarted,
-		&i.OriginLatitude,
-		&i.OriginLongitude,
+		&i.DepartureLatitude,
+		&i.DepartureLongitude,
+		&i.DepartureName,
 		&i.DestinationLatitude,
 		&i.DestinationLongitude,
 		&i.DestinationName,
@@ -210,7 +217,7 @@ const updateTripFare = `-- name: UpdateTripFare :one
 UPDATE trips
 SET fare = $2
 WHERE id = $1
-RETURNING id, user_id, driver_id, service_type, is_started, origin_latitude, origin_longitude, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, fare, created_at
+RETURNING id, user_id, driver_id, service_type, is_started, departure_latitude, departure_longitude, departure_name, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, fare, created_at
 `
 
 type UpdateTripFareParams struct {
@@ -227,8 +234,9 @@ func (q *Queries) UpdateTripFare(ctx context.Context, arg UpdateTripFareParams) 
 		&i.DriverID,
 		&i.ServiceType,
 		&i.IsStarted,
-		&i.OriginLatitude,
-		&i.OriginLongitude,
+		&i.DepartureLatitude,
+		&i.DepartureLongitude,
+		&i.DepartureName,
 		&i.DestinationLatitude,
 		&i.DestinationLongitude,
 		&i.DestinationName,

@@ -155,7 +155,7 @@
       // draw a path on the map
       gMap.value.$mapPromise.then((mapObject) => {
           // eslint-disable-next-line
-          let currentPoint = new google.maps.LatLng(location.current.geometry),
+          let departurePoint = new google.maps.LatLng(location.departure.geometry),
           // eslint-disable-next-line
               destinationPoint = new google.maps.LatLng(location.destination.geometry),
           // eslint-disable-next-line
@@ -166,7 +166,7 @@
               })
 
           directionsService.route({
-              origin: currentPoint,
+              origin: departurePoint,
               destination: destinationPoint,
               avoidTolls: false,
               avoidHighways: false,
@@ -203,10 +203,10 @@
 
   const getDistance = async () => {
     // eslint-disable-next-line
-    let currentPoint = new google.maps.LatLng(location.current.geometry)
+    let departurePoint = new google.maps.LatLng(location.departure.geometry)
     // eslint-disable-next-line
     let destinationPoint = new google.maps.LatLng(location.destination.geometry)
-    let res = await axios.get('distance/' + currentPoint + '/' + destinationPoint, {
+    let res = await axios.get('distance/' + departurePoint + '/' + destinationPoint, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('cus-token')}`
       }
@@ -248,7 +248,8 @@
       user_phone: localStorage.getItem('current_user_phone'),
       vehicle: vehicleName,
       // eslint-disable-next-line
-      origin_point : new google.maps.LatLng(location.current.geometry),
+      departure_point : new google.maps.LatLng(location.departure.geometry),
+      departure_name: location.departure.display_name,
       // eslint-disable-next-line
       destination_point : new google.maps.LatLng(location.destination.geometry),
       destination_name: location.destination.name,

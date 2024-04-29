@@ -7,7 +7,7 @@
             <div class="border-b"></div>
             <div class="flex justify-between items-center mt-3">
             <div>
-                <p class="font-bold text-lg ml-5">{{ customer_info.address }}</p>
+                <p class="font-bold text-lg ml-5">{{ beautifulizeAddress(customer_info.address) }}</p>
                 <p class="ml-5">{{ customer_info.name }}</p>
                 <div style="background-color: white; padding: 4px; width: 175px; margin-left: 20px;">
             </div>
@@ -72,9 +72,9 @@
                 <div class="flex flex-col">
                 <div class="flex items-center">
                     <img src="img/logo/start_point.png" alt="Start Icon" class="mr-2 w-6 h-6">
-                    <p class="font-bold text-lg">Lorem ipsum</p>
+                    <p class="font-bold text-lg">{{ beautifulizeAddress(customer_info.address) }}</p>
                     </div>
-                    <p class="text-lg ml-8">Quận 1, Hồ Chí Minh</p>
+                    <p class="text-lg ml-8">{{ tailAddress(customer_info.address) }}</p>
                 </div>
                 <div class="border-b border-gray-400 my-2"></div>
                 <div class="flex flex-col">
@@ -152,7 +152,7 @@
 
     const customer_info = ref({
       name: 'Dương Phan Nam Hưng',
-      address: '7/42 Thành Thái, Q.10, HCM', // TODO: get real info
+      address: '', // TODO: get real info
       image: 'https://www.w3schools.com/howto/img_avatar.png',
       fare: 0,
     })
@@ -198,6 +198,7 @@
             metadata.value.trip_id = resp.data.trip_id
             metadata.value.fare = resp.data.fare
             metadata.value.destination_name = resp.data.destination_name
+            customer_info.value.address = resp.data.departure_name
             metadata.value.trip_created_at = resp.data.trip_created_at
             timestampToFormat(metadata.value.trip_created_at)
         }).catch((error) => {
@@ -205,6 +206,28 @@
             alert(error.response.data.message)
         }) 
     })
+
+    const beautifulizeAddress = (address) => {
+        if (!address) return ''
+        let list_address = address.split(',')
+        if (list_address.length < 2) {
+        return address
+        }
+        else {
+        return list_address[0] + ', ' + list_address[1] + ', ' + list_address[2]
+        }
+    }
+
+    const tailAddress = (address) => {
+        if (!address) return ''
+        let list_address = address.split(',')
+        if (list_address.length < 2) {
+            return address
+        }
+        else {
+            return list_address[list_address.length - 2] + ', ' + list_address[list_address.length - 1]
+        }
+    }
 
     const backHome = async () => {
         localStorage.removeItem('driver_arrived')

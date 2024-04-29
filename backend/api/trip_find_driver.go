@@ -40,7 +40,7 @@ func (server *Server) tripFindDriver(ctx *gin.Context) {
 	}
 
 	curr_trip, err := server.store.GetTrip(ctx, trip_id)
-	geo_id := getUserGeofence(curr_trip.OriginLatitude, curr_trip.OriginLongitude)
+	geo_id := getUserGeofence(curr_trip.DepartureLatitude, curr_trip.DepartureLongitude)
 
 	engagement, err := server.store.GetActiveEngagementInGeo(ctx, geo_id)
 	if err != nil {

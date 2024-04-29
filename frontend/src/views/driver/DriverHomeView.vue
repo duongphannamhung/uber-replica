@@ -6,7 +6,7 @@
 
     <GMapMap v-if='isToggleOn'
         :zoom="15" 
-        :center="location.current.geometry"
+        :center="location.departure.geometry"
         :options="{
           minZoom: 3,
           maxZoom : 17,
@@ -17,12 +17,12 @@
         }"
         ref="gMap"
         style="position: absolute; height: 100vh; width: 100%;">
-        <GMapMarker :position="location.current.geometry"/>
+        <GMapMarker :position="location.departure.geometry"/>
     </GMapMap>
 
     <GMapMap v-else
         :zoom="15" 
-        :center="location.current.geometry"
+        :center="location.departure.geometry"
         :options="{
           minZoom: 3,
           maxZoom : 17,
@@ -109,8 +109,8 @@
         driver_id: localStorage.getItem('current_driver_id'),
         driver_phone: localStorage.getItem('current_driver_phone'),
         status: isActive(),
-        lat : location.current.geometry.lat,
-        lng : location.current.geometry.lng,
+        lat : location.departure.geometry.lat,
+        lng : location.departure.geometry.lng,
         geo_id : 1 // update geo_id later
       }
     }
@@ -217,8 +217,8 @@
         driver_id: localStorage.getItem('current_driver_id'),
         driver_phone: localStorage.getItem('current_driver_phone'),
         status: 1,
-        lat : location.current.geometry.lat,
-        lng : location.current.geometry.lng,
+        lat : location.departure.geometry.lat,
+        lng : location.departure.geometry.lng,
         geo_id : 1 // update geo_id later
       }) 
     })

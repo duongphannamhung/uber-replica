@@ -14,7 +14,8 @@ type TripBikeRequest struct {
 	UserId           string   `json:"user_id" binding:"required"`
 	UserPhone        string   `json:"user_phone" binding:"required"`
 	Vehicle          string   `json:"vehicle" binding:"required"`
-	OriginPoint      GeoPoint `json:"origin_point" binding:"required"`
+	DeparturePoint   GeoPoint `json:"departure_point" binding:"required"`
+	DepartureName    string   `json:"departure_name" binding:"required"`
 	DestinationPoint GeoPoint `json:"destination_point" binding:"required"`
 	DestinationName  string   `json:"destination_name" binding:"required"`
 }
@@ -51,8 +52,9 @@ func (server *Server) createTripBike(ctx *gin.Context) {
 	curr_trip, err := server.store.CreateTrip(ctx, db.CreateTripParams{
 		UserID:               user_id,
 		ServiceType:          service_type,
-		OriginLatitude:       request.OriginPoint.Latitude,
-		OriginLongitude:      request.OriginPoint.Longitude,
+		DepartureLatitude:    request.DeparturePoint.Latitude,
+		DepartureLongitude:   request.DeparturePoint.Longitude,
+		DepartureName:        request.DepartureName,
 		DestinationLatitude:  request.DestinationPoint.Latitude,
 		DestinationLongitude: request.DestinationPoint.Longitude,
 		DestinationName:      request.DestinationName,
@@ -73,8 +75,9 @@ type getTripInfoResponse struct {
 	DriverID                int32           `json:"driver_id"`
 	ServiceType             int32           `json:"service_type"`
 	IsStarted               bool            `json:"is_started"`
-	OriginLatitude          float64         `json:"origin_latitude"`
-	OriginLongitude         float64         `json:"origin_longitude"`
+	DepartureName           string          `json:"departure_name"`
+	DepartureLatitude       float64         `json:"departure_latitude"`
+	DepartureLongitude      float64         `json:"departure_longitude"`
 	DestinationLatitude     float64         `json:"destination_latitude"`
 	DestinationLongitude    float64         `json:"destination_longitude"`
 	DestinationName         string          `json:"destination_name"`
@@ -103,8 +106,9 @@ func (server *Server) getTripInfo(ctx *gin.Context) {
 		DriverID:                trip.DriverID.Int32,
 		ServiceType:             trip.ServiceType,
 		IsStarted:               trip.IsStarted,
-		OriginLatitude:          trip.OriginLatitude,
-		OriginLongitude:         trip.OriginLongitude,
+		DepartureName:           trip.DepartureName,
+		DepartureLatitude:       trip.DepartureLatitude,
+		DepartureLongitude:      trip.DepartureLongitude,
 		DestinationLatitude:     trip.DestinationLatitude,
 		DestinationLongitude:    trip.DestinationLongitude,
 		DestinationName:         trip.DestinationName,

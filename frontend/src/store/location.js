@@ -17,7 +17,15 @@ export const useLocationStore = defineStore('location', () => {
         }
     })
 
-    const current = reactive({
+    // const current = reactive({
+    //     geometry: {
+    //         lat: null,
+    //         lng: null
+    //     }
+    // })
+
+    const departure = reactive({
+        display_name: '',
         geometry: {
             lat: null,
             lng: null
@@ -26,10 +34,18 @@ export const useLocationStore = defineStore('location', () => {
 
     const updateCurrentLocation = async () => {
         const userLocation = await getUserLocation()
-        current.geometry = {
+        departure.geometry = {
             lat: userLocation.coords.latitude,
             lng: userLocation.coords.longitude
         }
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${departure.geometry.lat}&lon=${departure.geometry.lng}&format=json`, {
+            headers: {
+              'User-agent': navigator.userAgent,
+            }
+          });
+        response.json().then(data => {
+            departure.display_name = data.display_name
+        })
     }
 
     const reset = () => {
@@ -38,9 +54,10 @@ export const useLocationStore = defineStore('location', () => {
         destination.geometry.lat = null
         destination.geometry.lng = null
 
-        current.geometry.lat = null
-        current.geometry.lng = null
+        departure.display_name = ''
+        departure.geometry.lat = null
+        departure.geometry.lng = null
     }
     
-    return { destination, current, updateCurrentLocation, reset }
+    return { destination, departure, updateCurrentLocation, reset }
 })

@@ -1,7 +1,7 @@
 <template>
     <div>
       <GMapMap
-          :zoom="4" :center="location.current.geometry"
+          :zoom="4" :center="location.departure.geometry"
           :options="{
             minZoom: 3,
             maxZoom : 17,
@@ -147,7 +147,7 @@
         // draw a path on the map
         gMap.value.$mapPromise.then((mapObject) => {
             // eslint-disable-next-line
-            let currentPoint = new google.maps.LatLng(location.current.geometry),
+            let departurePoint = new google.maps.LatLng(location.departure.geometry),
             // eslint-disable-next-line
                 destinationPoint = new google.maps.LatLng(location.destination.geometry),
             // eslint-disable-next-line
@@ -158,7 +158,7 @@
                 })
   
             directionsService.route({
-                origin: currentPoint,
+                origin: departurePoint,
                 destination: destinationPoint,
                 avoidTolls: false,
                 avoidHighways: false,

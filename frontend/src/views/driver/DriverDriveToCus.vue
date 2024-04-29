@@ -1,17 +1,7 @@
 <template>
     <div>
-  
-      <!-- <div 
-        id="BackBtn" 
-        class="absolute z-50 rounded-full bg-white p-1 top-8 left-4"
-        @click="goBack()"
-      >
-        <ArrowLeftIcon :size="40" />
-      </div> -->
-      
-      <!-- <div id="map" > -->
       <GMapMap
-          :zoom="4" :center="location.current.geometry"
+          :zoom="4" :center="location.departure.geometry"
           :options="{
             minZoom: 3,
             maxZoom : 17,
@@ -32,7 +22,7 @@
       <div class="border-b"></div>
       <div class="flex justify-between items-center mt-3">
         <div>
-          <p class="font-bold text-lg ml-5">{{ customer_info.address }}</p>
+          <p class="font-bold text-lg ml-5">{{ beautifulizeAddress(customer_info.address) }}</p>
           <p class="ml-5">{{ customer_info.name }}</p>
           <div style="background-color: lightgoldenrodyellow; padding: 4px; width: 175px; margin-left: 20px;">
             <p style="font-weight: 600;">Tiền mặt: {{ convertPriceToVND(customer_info.fare) }}</p>
@@ -124,8 +114,7 @@
     const router = useRouter()
     const location = useLocationStore()
     const customer_location = reactive({
-        // name: '',
-        // address: '',
+        display_name: '',
         geometry: {
             lat: null,
             lng: null
@@ -138,7 +127,7 @@
 
     const customer_info = ref({
       name: 'Dương Phan Nam Hưng',
-      address: '7/42 Thành Thái, Q.10, HCM', // TODO: get real info
+      address: '', // TODO: get real info
       image: 'https://www.w3schools.com/howto/img_avatar.png',
       fare: 0,
     })
@@ -166,9 +155,10 @@
                 Authorization: `Bearer ${localStorage.getItem('driver-token')}`
             }
         }).then((resp) => {
-            customer_location.geometry.lat = resp.data.origin_latitude
-            customer_location.geometry.lng = resp.data.origin_longitude
             customer_info.value.fare = resp.data.fare
+            customer_location.geometry.lat = resp.data.departure_latitude
+            customer_location.geometry.lng = resp.data.departure_longitude
+            customer_info.value.address = resp.data.departure_name
         }).catch((error) => {
             console.error(error)
             alert(error.response.data.message)
@@ -186,7 +176,7 @@
         // draw a path on the map
         gMap.value.$mapPromise.then((mapObject) => {
             // eslint-disable-next-line
-            let currentPoint = new google.maps.LatLng(location.current.geometry),
+            let departurePoint = new google.maps.LatLng(location.departure.geometry),
             // eslint-disable-next-line
                 destinationPoint = new google.maps.LatLng(customer_location.geometry),
             // eslint-disable-next-line
@@ -197,7 +187,7 @@
                 })
   
             directionsService.route({
-                origin: currentPoint,
+                origin: departurePoint,
                 destination: destinationPoint,
                 avoidTolls: false,
                 avoidHighways: false,
@@ -228,11 +218,22 @@
     }
 
     const updateDriverLocation = async () => {
-    if (getDistanceFromLatLonInKm(location.current.geometry.lat, location.current.geometry.lng, customer_location.geometry.lat, customer_location.geometry.lng) < 100) {
+    if (getDistanceFromLatLonInKm(location.departure.geometry.lat, location.departure.geometry.lng, customer_location.geometry.lat, customer_location.geometry.lng) < 100) {
       clearInterval(driver_come_interval)
 
       // await sleep(7000);
       driverArrived.value = true;
+    }
+  }
+
+  const beautifulizeAddress = (address) => {
+    if (!address) return ''
+    let list_address = address.split(',')
+    if (list_address.length < 2) {
+      return address
+    }
+    else {
+      return list_address[0] + ', ' + list_address[1] + ', ' + list_address[2] + '...'
     }
   }
 

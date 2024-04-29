@@ -11,7 +11,7 @@
       
       <!-- <div id="map" > -->
       <GMapMap
-          :zoom="4" :center="location.current.geometry"
+          :zoom="4" :center="location.departure.geometry"
           :options="{
             minZoom: 3,
             maxZoom : 17,
@@ -32,7 +32,7 @@
         <div class="border-b"></div>
         <div class="flex justify-between items-center mt-3">
           <div>
-            <p class="font-bold text-lg ml-5">{{ customer_info.address }}</p>
+            <p class="font-bold text-lg ml-5">{{ beautifulizeAddress(customer_info.address) }}</p>
             <p class="ml-5">{{ customer_info.name }}</p>
             <div style="background-color: lightgoldenrodyellow; padding: 4px; width: 175px; margin-left: 20px;">
               <p style="font-weight: 600;">Tiền mặt: {{ convertPriceToVND(customer_info.fare) }}</p>
@@ -121,7 +121,7 @@
 
     const customer_info = ref({
       name: 'Dương Phan Nam Hưng',
-      address: '7/42 Thành Thái, Q.10, HCM', // TODO: get real info
+      address: '',
       image: 'https://www.w3schools.com/howto/img_avatar.png',
       fare: 0,
     })
@@ -160,6 +160,7 @@
             destination.value.address = resp.data.destination_name
             destination.value.geometry.lat = resp.data.destination_latitude
             destination.value.geometry.lng = resp.data.destination_longitude
+            customer_info.value.address = resp.data.departure_name
             customer_info.value.fare = resp.data.fare
         }).catch((error) => {
             console.error(error)
@@ -173,7 +174,7 @@
         // draw a path on the map
         gMap.value.$mapPromise.then((mapObject) => {
             // eslint-disable-next-line
-            let currentPoint = new google.maps.LatLng(location.current.geometry),
+            let departurePoint = new google.maps.LatLng(location.departure.geometry),
             // eslint-disable-next-line
                 destinationPoint = new google.maps.LatLng(destination.value.geometry),
             // eslint-disable-next-line
@@ -184,7 +185,7 @@
                 })
   
             directionsService.route({
-                origin: currentPoint,
+                origin: departurePoint,
                 destination: destinationPoint,
                 avoidTolls: false,
                 avoidHighways: false,
@@ -218,7 +219,18 @@
             name : 'driver-complete-trip'
         })
     }
-  
+
+    const beautifulizeAddress = (address) => {
+      if (!address) return ''
+      let list_address = address.split(',')
+      if (list_address.length < 2) {
+        return address
+      }
+      else {
+        return list_address[0] + ', ' + list_address[1] + ', ' + list_address[2] + '...'
+      }
+    }
+
   </script>
   
   <style lang="scss">

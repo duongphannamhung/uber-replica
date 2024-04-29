@@ -73,9 +73,9 @@
                 <div class="flex flex-col">
                 <div class="flex items-center">
                     <img src="img/logo/start_point.png" alt="Start Icon" class="mr-2 w-6 h-6">
-                    <p class="font-bold text-lg">Lorem ipsum</p>
+                    <p class="font-bold text-lg">{{ beautifulizeAddress(metadata.departure_name) }}</p>
                     </div>
-                    <p class="text-lg ml-8">Quận 1, Hồ Chí Minh</p>
+                    <p class="text-lg ml-8">{{ tailAddress(metadata.departure_name) }}</p>
                 </div>
                 <div class="border-b border-gray-400 my-2"></div>
                 <div class="flex flex-col">
@@ -176,6 +176,7 @@
         trip_id: null,
         fare: null,
         destination_name: null,
+        departure_name: null,
         trip_created_at: null
     })
     const router = useRouter()
@@ -197,6 +198,7 @@
             metadata.value.trip_id = resp.data.trip_id
             metadata.value.fare = resp.data.fare
             metadata.value.destination_name = resp.data.destination_name
+            metadata.value.departure_name = resp.data.departure_name
             metadata.value.trip_created_at = resp.data.trip_created_at
             timestampToFormat(metadata.value.trip_created_at)
       }).catch((error) => {
@@ -204,6 +206,28 @@
           alert(error.response.data.message)
       })
     })
+
+    const beautifulizeAddress = (address) => {
+        if (!address) return ''
+        let list_address = address.split(',')
+        if (list_address.length < 2) {
+        return address
+        }
+        else {
+        return list_address[0] + ', ' + list_address[1] + ', ' + list_address[2]
+        }
+    }
+
+    const tailAddress = (address) => {
+        if (!address) return ''
+        let list_address = address.split(',')
+        if (list_address.length < 2) {
+            return address
+        }
+        else {
+            return list_address[list_address.length - 2] + ', ' + list_address[list_address.length - 1]
+        }
+    }
 
     const backHome = async () => {
         localStorage.removeItem('current_trip_id')

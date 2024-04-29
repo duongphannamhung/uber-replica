@@ -25,8 +25,9 @@ CREATE TABLE "trips" (
   "driver_id" integer references drivers(id),
   "service_type" integer NOT NULL, -- 1 : bike
   "is_started" boolean NOT NULL DEFAULT (false),
-  "origin_latitude" float NOT NULL,
-  "origin_longitude" float NOT NULL,
+  "departure_latitude" float NOT NULL,
+  "departure_longitude" float NOT NULL,
+  "departure_name" text NOT NULL,
   "destination_latitude" float NOT NULL,
   "destination_longitude" float NOT NULL,
   "destination_name" text NOT NULL,

@@ -11,7 +11,7 @@
     
     <!-- <div id="map" > -->
     <GMapMap
-        :zoom="4" :center="location.current.geometry"
+        :zoom="4" :center="location.departure.geometry"
         :options="{
           minZoom: 3,
           maxZoom : 17,
@@ -170,9 +170,9 @@
       // draw a path on the map
       gMap.value.$mapPromise.then((mapObject) => {
           // eslint-disable-next-line
-          let currentPoint =  new google.maps.LatLng(driver_location.geometry),
+          let departurePoint =  new google.maps.LatLng(driver_location.geometry),
           // eslint-disable-next-line
-              destinationPoint = new google.maps.LatLng(location.current.geometry),
+              destinationPoint = new google.maps.LatLng(location.departure.geometry),
           // eslint-disable-next-line
               directionsService = new google.maps.DirectionsService,
           // eslint-disable-next-line
@@ -181,7 +181,7 @@
               })
 
           directionsService.route({
-              origin: currentPoint,
+              origin: departurePoint,
               destination: destinationPoint,
               avoidTolls: false,
               avoidHighways: false,
@@ -212,7 +212,7 @@
   }
 
   const updateDriverLocation = async () => {
-    if (getDistanceFromLatLonInKm(location.current.geometry.lat, location.current.geometry.lng, driver_location.geometry.lat, driver_location.geometry.lng) < 100) {
+    if (getDistanceFromLatLonInKm(location.departure.geometry.lat, location.departure.geometry.lng, driver_location.geometry.lat, driver_location.geometry.lng) < 100) {
       clearInterval(driver_come_interval)
 
       // await sleep(3000);
