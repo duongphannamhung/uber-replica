@@ -146,6 +146,7 @@
           })
       }
       // lets get the users current location
+      await location.updateDestination()
       await location.updateCurrentLocation()
 
       while (!gMap.value) {
@@ -243,50 +244,59 @@
   const handleConfirmTrip = async () => {
     let item = items[selectedItemIndex.value]
     let vehicleName = item.name; 
-    let tripRequest = {
-      user_id: localStorage.getItem('current_user_id'),
-      user_phone: localStorage.getItem('current_user_phone'),
-      vehicle: vehicleName,
-      // eslint-disable-next-line
-      departure_point : new google.maps.LatLng(location.departure.geometry),
-      departure_name: location.departure.display_name,
-      // eslint-disable-next-line
-      destination_point : new google.maps.LatLng(location.destination.geometry),
-      destination_name: location.destination.address,
-    }
+    
+    if (localStorage.getItem('scheduleDateTime') != null) {
+      localStorage.setItem('vehicleName', vehicleName)
+      localStorage.setItem('multiplier', item.priceMultiplier)
+      router.push({
+        name : 'cus-schedule-trip-done'
+      })
+    } else {
+        let tripRequest = {
+        user_id: localStorage.getItem('current_user_id'),
+        user_phone: localStorage.getItem('current_user_phone'),
+        vehicle: vehicleName,
+        // eslint-disable-next-line
+        departure_point : new google.maps.LatLng(location.departure.geometry),
+        departure_name: location.departure.display_name,
+        // eslint-disable-next-line
+        destination_point : new google.maps.LatLng(location.destination.geometry),
+        destination_name: location.destination.address,
+      }
 
-    if (vehicleName == "UrepBike") {
-      await axios.post('trip/bike', tripRequest, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('cus-token')}`
-        }
-    })
-        .then(async (response) => {
-          localStorage.setItem('current_trip_id', response.data.trip_id)
+      if (vehicleName == "UrepBike") {
+        await axios.post('trip/bike', tripRequest, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('cus-token')}`
+          }
+      })
+          .then(async (response) => {
+            localStorage.setItem('current_trip_id', response.data.trip_id)
 
-          let fare = ((distance.value.value * 9000) * item.priceMultiplier / 1000000).toFixed(0) * 1000
-          console.log(`fare ${fare}, distance: ${distance.value.value}, multiplier: ${item.priceMultiplier}`)
+            let fare = ((distance.value.value * 9000) * item.priceMultiplier / 1000000).toFixed(0) * 1000
+            console.log(`fare ${fare}, distance: ${distance.value.value}, multiplier: ${item.priceMultiplier}`)
 
-          await axios.post('http://localhost:6969/api/driver/update-trip-fare', {
-              trip_id: response.data.trip_id,
-              fare: fare
-            }, {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem('cus-token')}`
-              }
+            await axios.post('http://localhost:6969/api/driver/update-trip-fare', {
+                trip_id: response.data.trip_id,
+                fare: fare
+              }, {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem('cus-token')}`
+                }
+              })
+
+            router.push({
+              name : 'cus-finding-driver'
             })
-
-          router.push({
-            name : 'cus-finding-driver'
           })
-        })
-        .catch((error) => {
-          console.error(error)
-          alert(error.response.data.message)
-          router.push({
-            name : 'cus-home'
+          .catch((error) => {
+            console.error(error)
+            alert(error.response.data.message)
+            router.push({
+              name : 'cus-home'
+            })
           })
-        })
+      }
     }
   }
 </script>

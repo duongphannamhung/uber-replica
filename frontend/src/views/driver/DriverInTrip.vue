@@ -148,6 +148,7 @@
     // const direction = useDirectionStore()
   
     onMounted(async () => {
+        await location.updateDestination()
         await location.updateCurrentLocation()
         
         await axios.get(`http://localhost:6969/api/trip/${localStorage.getItem('current_trip_id')}`, {

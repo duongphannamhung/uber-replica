@@ -139,6 +139,7 @@
     onMounted(async () => {
 
         // lets get the users current location
+        await location.updateDestination()
         await location.updateCurrentLocation()
 
         while (!gMap.value) {

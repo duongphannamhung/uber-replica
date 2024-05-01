@@ -162,6 +162,7 @@
       driver_come_interval = setInterval(updateDriverLocation, 1000);
 
       // lets get the driver current location
+      await location.updateDestination()
       await location.updateCurrentLocation()
 
       while (!gMap.value) {

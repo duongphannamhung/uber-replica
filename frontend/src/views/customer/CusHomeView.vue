@@ -1,5 +1,7 @@
 <template>
+
   <div id="Home" class="flex flex-col h-screen">
+
     <div class="m-3 mb-auto">
 
       <div class="my-20">
@@ -31,7 +33,8 @@
           image="transit"
         />
         <ServiceSelectSmall
-          text="Reserve"
+          @click="router.push('/cus-schedule-trip')" 
+          text="Schedule"
           image="reserve"
         />
         <ServiceSelectSmall
@@ -90,7 +93,6 @@
     import { useRouter } from 'vue-router'
     import ServiceSelectSmall from '@/components/ServiceSelectSmall.vue';
     import ServiceSelectLarge from '@/components/ServiceSelectLarge.vue';
-
     import MagnifyIcon from 'vue-material-design-icons/Magnify.vue';
     import HomeIcon from 'vue-material-design-icons/Home.vue';
     import MapMarkerIcon from 'vue-material-design-icons/MapMarker.vue';

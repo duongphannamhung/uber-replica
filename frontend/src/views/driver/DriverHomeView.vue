@@ -210,6 +210,7 @@
       // }
 
   onMounted(async () => {
+    await location.updateDestination()
     await location.updateCurrentLocation()
 
     window.addEventListener('beforeunload', function () {
