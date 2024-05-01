@@ -11,6 +11,7 @@ import DriverHomeView from '../views/driver/DriverHomeView.vue'
 import CusFindingDriver from '../views/customer/CusFindingDriver.vue'
 import DriverDriveToCus from '../views/driver/DriverDriveToCus.vue'
 import CusWaitingDriverArrive from '../views/customer/CusWaitingDriverArrive.vue'
+import CusScheduleTripView from '../views/customer/CusScheduleTripView.vue'
 
 const routes = [
   {
@@ -98,6 +99,16 @@ const routes = [
     name: 'cus-location',
     component: CusLocationView
   },
+  {
+    path: '/cus-schedule-trip',
+    name: 'cus-schedule-trip',
+    component: CusScheduleTripView
+  },
+  {
+    path: '/cus-schedule-trip-done',
+    name: 'cus-schedule-trip-done',
+    component: () => import("../views/customer/CusScheduleTripDoneView.vue"),
+  }
 ]
 
 const router = createRouter({
