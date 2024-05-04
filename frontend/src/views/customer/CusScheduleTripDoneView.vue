@@ -95,7 +95,7 @@ const startCountdown = () => {
           let tripRequest = {
             user_id: localStorage.getItem('current_user_id'),
             user_phone: localStorage.getItem('current_user_phone'),
-            vehicle: vehicleName,
+            vehicle: vehicleNameToType(vehicleName),
             // eslint-disable-next-line
             departure_point : new google.maps.LatLng(location.departure.geometry),
             departure_name: location.departure.display_name,
@@ -104,8 +104,8 @@ const startCountdown = () => {
             destination_name: location.destination.address,
         }
 
-        if (vehicleName == "UrepBike") {
-            await axios.post('trip/bike', tripRequest, {
+        // if (vehicleName == "UrepBike") {
+        await axios.post('create-trip', tripRequest, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('cus-token')}`
             }
@@ -131,19 +131,32 @@ const startCountdown = () => {
                 localStorage.removeItem('scheduleDateTime')
                 localStorage.removeItem('vehicleName')
                 router.push({
-                name : 'cus-finding-driver'
+                    name : 'cus-finding-driver'
                 })
             })
             .catch((error) => {
                 console.error(error)
                 alert(error.response.data.message)
                 router.push({
-                name : 'cus-home'
+                    name : 'cus-home'
                 })
             })
         }
-        }
       }, 1000);
+}
+
+const vehicleNameToType = (vehicleName) => {
+    if (vehicleName == 'UrepBike') {
+        return 1
+    } else if (vehicleName == 'UrepCar') {
+        return 2
+    } else if (vehicleName == 'UrepCar4') {
+        return 3
+    } else if (vehicleName == 'UrepCar7') {
+        return 4
+    } else {
+        return -1
+    }
 }
 
 const getDistance = async () => {

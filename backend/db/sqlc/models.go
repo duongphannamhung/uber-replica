@@ -10,27 +10,27 @@ import (
 )
 
 type Driver struct {
-	ID           int64          `json:"id"`
-	Phone        string         `json:"phone"`
-	Name         sql.NullString `json:"name"`
-	LoginCode    sql.NullString `json:"login_code"`
-	Year         sql.NullInt32  `json:"year"`
-	Make         sql.NullString `json:"make"`
-	Model        sql.NullString `json:"model"`
-	Color        sql.NullString `json:"color"`
-	LicensePlate sql.NullString `json:"license_plate"`
-	CreatedAt    time.Time      `json:"created_at"`
+	ID        int64          `json:"id"`
+	Phone     string         `json:"phone"`
+	LoginCode sql.NullString `json:"login_code"`
+	CreatedAt time.Time      `json:"created_at"`
 }
 
 type Engagement struct {
-	ID         int64         `json:"id"`
-	DriverID   int32         `json:"driver_id"`
-	Status     int32         `json:"status"`
-	InTrip     sql.NullInt32 `json:"in_trip"`
-	Latitude   float64       `json:"latitude"`
-	Longitude  float64       `json:"longitude"`
-	GeofenceID int32         `json:"geofence_id"`
-	CreatedAt  time.Time     `json:"created_at"`
+	ID           int64           `json:"id"`
+	DriverID     int32           `json:"driver_id"`
+	Status       sql.NullInt32   `json:"status"`
+	InTrip       sql.NullInt32   `json:"in_trip"`
+	VehicleID    int32           `json:"vehicle_id"`
+	Name         string          `json:"name"`
+	Label        string          `json:"label"`
+	Model        string          `json:"model"`
+	Color        string          `json:"color"`
+	LicensePlate string          `json:"license_plate"`
+	Latitude     sql.NullFloat64 `json:"latitude"`
+	Longitude    sql.NullFloat64 `json:"longitude"`
+	GeofenceID   sql.NullInt32   `json:"geofence_id"`
+	CreatedAt    time.Time       `json:"created_at"`
 }
 
 type Trip struct {
@@ -57,4 +57,10 @@ type User struct {
 	Phone     string         `json:"phone"`
 	LoginCode sql.NullString `json:"login_code"`
 	CreatedAt time.Time      `json:"created_at"`
+}
+
+type Vehicle struct {
+	ID        int64     `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
 }

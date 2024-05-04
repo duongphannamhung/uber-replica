@@ -13,12 +13,17 @@ type Querier interface {
 	CreateEngagement(ctx context.Context, arg CreateEngagementParams) (Engagement, error)
 	CreateTrip(ctx context.Context, arg CreateTripParams) (Trip, error)
 	CreateUser(ctx context.Context, phone string) (User, error)
-	// -- name: UpdateDriver :one
-	// UPDATE drivers
-	// SET name = $2
+	DeleteDriver(ctx context.Context, id int64) error
+	// -- name: UpdateDriverInfo :one
+	// UPDATE engagements
+	// SET name = $2,
+	//     vehicle_id = $3,
+	//     label = $4,
+	//     model = $5,
+	//     color = $6,
+	//     license_plate = $7
 	// WHERE id = $1
 	// RETURNING *;
-	DeleteDriver(ctx context.Context, id int64) error
 	DeleteEngagement(ctx context.Context, id int64) error
 	// -- name: UpdateTrip :one
 	// UPDATE users
@@ -27,9 +32,10 @@ type Querier interface {
 	// RETURNING *;
 	DeleteTrip(ctx context.Context, id int64) error
 	DeleteUser(ctx context.Context, id int64) error
-	GetActiveEngagementInGeo(ctx context.Context, geofenceID int32) (Engagement, error)
+	GetActiveEngagementInGeoWithVehicle(ctx context.Context, arg GetActiveEngagementInGeoWithVehicleParams) (Engagement, error)
 	GetDriver(ctx context.Context, id int64) (Driver, error)
 	GetDriverByPhone(ctx context.Context, phone string) (Driver, error)
+	GetDriverInfo(ctx context.Context, arg GetDriverInfoParams) (GetDriverInfoRow, error)
 	GetEngagement(ctx context.Context, id int64) (Engagement, error)
 	GetEngagementDriver(ctx context.Context, driverID int32) (Engagement, error)
 	GetTrip(ctx context.Context, id int64) (Trip, error)

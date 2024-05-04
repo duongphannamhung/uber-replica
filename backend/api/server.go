@@ -21,7 +21,7 @@ type Server struct {
 func NewServer(config util.Config, store db.Store) (*Server, error) {
 	tokenMaker, err := token.NewPasetoMaker(config.TokenSymmetricKey)
 	if err != nil {
-		log.Fatal("cannot create token maker: ", err)
+		log.Print("cannot create token maker: ", err)
 	}
 
 	server := &Server{config: config, store: store, tokenMaker: tokenMaker}
@@ -40,13 +40,16 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 	authRoutes.GET("/api/auth", server.authUser)
 	authRoutes.GET("/api/distance/:departure/:destination", server.getDistance)
 	authRoutes.GET("/api/trip/:tripId", server.getTripInfo)
-	authRoutes.POST("/api/trip/bike", server.createTripBike)
+	authRoutes.POST("/api/create-trip", server.createTrip)
 	authRoutes.GET("/api/trip/find-driver", server.tripFindDriver)
+	authRoutes.GET("/api/trip/get-driver-info/:tripId", server.getDriverInfo)
 
 	router.POST("/api/driver/login-phone", server.driverLoginPhone)
 	router.POST("/api/driver/login-phone/verify", server.verifyDriverLoginPhone)
+	router.POST("/api/driver/register", server.driverRegister)
 	authDriverRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 	authDriverRoutes.GET("/api/driver/auth", server.authDriver)
+	authDriverRoutes.GET("/api/driver/check-engagement", server.checkEngagement)
 	authDriverRoutes.GET("/api/driver/current-status", server.currentDriverStatus)
 	authDriverRoutes.POST("/api/driver/update-trip-fare", server.updateTripFare)
 	authDriverRoutes.POST("/api/driver/update-engagement", server.driverUpdateEngagement)

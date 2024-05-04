@@ -1,12 +1,14 @@
 -- name: CreateEngagement :one
 INSERT INTO engagements (
     driver_id,
-    status,
-    latitude,
-    longitude,
-    geofence_id
+    name,
+    vehicle_id,
+    label,
+    model,
+    color,
+    license_plate
 ) VALUES (
-    $1, $2, $3, $4, $5
+    $1, $2, $3, $4, $5, $6, $7
 )
 RETURNING *;
 
@@ -18,9 +20,12 @@ WHERE id = $1 LIMIT 1;
 SELECT * FROM engagements
 WHERE driver_id = $1 LIMIT 1;
 
--- name: GetActiveEngagementInGeo :one
+-- name: GetActiveEngagementInGeoWithVehicle :one
 SELECT * FROM engagements
-WHERE geofence_id = $1 AND status = 2 LIMIT 1;
+WHERE geofence_id = $1 
+AND status = 2 
+AND vehicle_id = $2
+LIMIT 1;
 
 -- name: ListEngagements :many
 SELECT * FROM engagements
@@ -45,6 +50,29 @@ UPDATE engagements
 SET in_trip = $2
 WHERE driver_id = $1
 RETURNING *;
+
+
+-- name: GetDriverInfo :one
+SELECT driver_id,
+    name,
+    label,
+    model,
+    color,
+    license_plate
+FROM engagements
+WHERE driver_id = $1
+AND vehicle_id = $2;
+
+-- -- name: UpdateDriverInfo :one
+-- UPDATE engagements
+-- SET name = $2,
+--     vehicle_id = $3,
+--     label = $4,
+--     model = $5,
+--     color = $6,
+--     license_plate = $7
+-- WHERE id = $1
+-- RETURNING *;
 
 -- name: DeleteEngagement :exec
 DELETE FROM engagements

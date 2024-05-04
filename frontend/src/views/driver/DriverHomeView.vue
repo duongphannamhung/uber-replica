@@ -50,7 +50,7 @@
     <div class="icon-bar" style="position: absolute; background-color: white; bottom: 0vh; height: 10vh; width: 100%; display: flex; justify-content: space-around; align-items: center;">
       <button style="background-color: white; color: black; border: none; padding: 10px;"> <i class="material-icons">home</i> </button> 
       <div style="border-left: 1px solid black; height: 100%;"></div>
-      <button style="background-color: white; color: black; border: none; padding: 10px;"> <i class="material-icons">search</i> </button> 
+      <button style="background-color: white; color: black; border: none; padding: 10px;" @click="goToRegister"> <i class="material-icons">person_add</i> </button> 
       <div style="border-left: 1px solid black; height: 100%;"></div>
       <button style="background-color: white; color: black; border: none; padding: 10px;"> <i class="material-icons">notifications</i> </button> 
       <div style="border-left: 1px solid black; height: 100%;"></div>
@@ -103,6 +103,11 @@
   //   }
   //   next();
   // })
+  const goToRegister = () => {
+      router.push({
+        name: 'driver-register'
+      })
+    }
 
   const getEngagement = () => {
       return {
@@ -125,7 +130,6 @@
       // })
       .catch((error) => {
           console.error(error)
-          alert(error.response.data.message)
       })
   }
   
@@ -136,7 +140,7 @@
         }
     })
       .then((response) => {
-        if (response.data.status !== 1 && response.data.status !== 2) {
+        if (response.data.status != null && response.data.status !== 1 && response.data.status !== 2) {
           clearInterval(intervalId);
           clearInterval(intervalGetStatus);
           intervalId = null;
@@ -147,7 +151,6 @@
       })
       .catch((error) => {
           console.error(error)
-          alert(error.response.data.message)
       })
   }
 
@@ -165,7 +168,7 @@
           localStorage.setItem('isToggleOn', 'true')
           intervalId = setInterval(() => {
             updateEngagement(getEngagement());
-          }, 1000)
+          }, 10000)
           intervalGetStatus = setInterval(getDriverStatus, 1000)
         } else {
           localStorage.setItem('isToggleOn', 'false')
@@ -210,6 +213,31 @@
       // }
 
   onMounted(async () => {
+    let flag = false;
+    await axios.get('http://localhost:6969/api/driver/check-engagement?driver_id=' + localStorage.getItem('current_driver_id'), {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('driver-token')}`
+        }
+    })
+      .then((response) => {
+        if (response.data == true) {
+          flag = true;
+        } else {
+          flag = false;
+        }
+      }
+    ).catch((error) => {
+          console.error(error)
+          alert(error.response.data.message)
+      })
+
+    if (!flag) {
+      alert('Bạn cần đăng ký tài xế');
+      router.push({
+        name: 'driver-register'
+      })
+    }
+
     await location.updateDestination()
     await location.updateCurrentLocation()
 

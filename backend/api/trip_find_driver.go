@@ -28,6 +28,8 @@ type findDriverDoneResponse struct {
 
 func (server *Server) tripFindDriver(ctx *gin.Context) {
 	_trip_id := ctx.Query("trip_id")
+	_vehicle_type := ctx.Query("vehicle_type")
+
 	if _trip_id == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Missing trip_id parameter"})
 		return
@@ -39,10 +41,19 @@ func (server *Server) tripFindDriver(ctx *gin.Context) {
 		return
 	}
 
+	vehicle_type, err := strconv.ParseInt(_vehicle_type, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
 	curr_trip, err := server.store.GetTrip(ctx, trip_id)
 	geo_id := getUserGeofence(curr_trip.DepartureLatitude, curr_trip.DepartureLongitude)
 
-	engagement, err := server.store.GetActiveEngagementInGeo(ctx, geo_id)
+	engagement, err := server.store.GetActiveEngagementInGeoWithVehicle(ctx, db.GetActiveEngagementInGeoWithVehicleParams{
+		GeofenceID: sql.NullInt32{Int32: int32(geo_id), Valid: true},
+		VehicleID:  int32(vehicle_type),
+	})
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusOK, noDriverFoundResponse{FindDone: false})
@@ -56,7 +67,7 @@ func (server *Server) tripFindDriver(ctx *gin.Context) {
 		ctx,
 		db.UpdateEngagementStatusParams{
 			DriverID: engagement.DriverID,
-			Status:   3,
+			Status:   sql.NullInt32{Int32: 3, Valid: true},
 		})
 
 	if err != nil {
@@ -68,9 +79,9 @@ func (server *Server) tripFindDriver(ctx *gin.Context) {
 		db.UpdateStartTripParams{
 			ID:                      trip_id,
 			DriverID:                sql.NullInt32{Int32: engagement.DriverID, Valid: true},
-			ServiceType:             1, // TODO: change this
-			DriverLocationLatitude:  sql.NullFloat64{Float64: engagement.Latitude, Valid: true},
-			DriverLocationLongitude: sql.NullFloat64{Float64: engagement.Longitude, Valid: true},
+			ServiceType:             int32(vehicle_type),
+			DriverLocationLatitude:  sql.NullFloat64{Float64: engagement.Latitude.Float64, Valid: true},
+			DriverLocationLongitude: sql.NullFloat64{Float64: engagement.Longitude.Float64, Valid: true},
 		},
 	)
 	if err != nil {
@@ -94,8 +105,41 @@ func (server *Server) tripFindDriver(ctx *gin.Context) {
 		FindDone:        true,
 		DriverId:        int64(engagement.DriverID),
 		EngagementId:    engagement.ID,
-		DriverLatitude:  engagement.Latitude,
-		DriverLongitude: engagement.Longitude,
+		DriverLatitude:  engagement.Latitude.Float64,
+		DriverLongitude: engagement.Longitude.Float64,
 	})
+	return
+}
+
+func (server *Server) getDriverInfo(ctx *gin.Context) {
+	_trip_id := ctx.Param("tripId")
+
+	if _trip_id == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Missing trip_id parameter"})
+		return
+	}
+
+	trip_id, err := strconv.ParseInt(_trip_id, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	trip, err := server.store.GetTrip(ctx, trip_id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	driver, err := server.store.GetDriverInfo(ctx, db.GetDriverInfoParams{
+		DriverID:  trip.DriverID.Int32,
+		VehicleID: trip.ServiceType,
+	})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, driver)
 	return
 }

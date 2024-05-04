@@ -119,7 +119,7 @@ const updateSecond = () => {
 }
 
 const findDriver = async () => {
-    await axios.get('http://localhost:6969/api/trip/find-driver?trip_id=' + localStorage.getItem('current_trip_id') , {
+    await axios.get('http://localhost:6969/api/trip/find-driver?trip_id=' + localStorage.getItem('current_trip_id') + '&vehicle_type=' + localStorage.getItem('vehicle_type') , {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('cus-token')}`
         }

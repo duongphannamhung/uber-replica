@@ -22,10 +22,10 @@
       <div class="border-b"></div>
       <div class="flex justify-between items-center mt-3">
         <div>
-          <p class="font-bold text-lg ml-5">{{ driver_info.name }}</p>          
-          <p class="ml-5">{{ driver_info.carLabel }} | {{ driver_info.carName }}</p>
+          <p class="font-bold text-lg ml-5">{{ driver_info.name.toUpperCase() }}</p>          
+          <p class="ml-5">{{ driver_info.vehicleLabel }} | {{ driver_info.vehicleModel }} | {{ driver_info.vehicleColor }}</p>
           <div style="background-color: lightgray; padding: 4px; width: 125px; margin-left: 20px;">
-            <p style="font-weight: 600;">{{ driver_info.carNumber }}</p>
+            <p style="font-weight: 600;">{{ driver_info.vehicleLicensePlate }}</p>
           </div>
         </div>
         <div>
@@ -100,12 +100,13 @@
     // const trip = useTripStore()
   
     const gMap = ref(null)
-    
+
     const driver_info = ref({
-      name: 'DƯƠNG PHAN NAM HƯNG',
-      carNumber: '59C1-123.45',
-      carName: 'SH',
-      carLabel: 'Honda',
+      name: localStorage.getItem('current_driver_name'),
+      vehicleLicensePlate: localStorage.getItem('current_vehicle_license_plate'),
+      vehicleModel: localStorage.getItem('current_driver_vehicle_model'),
+      vehicleLabel: localStorage.getItem('current_driver_vehicle_label'),
+      vehicleColor: localStorage.getItem('current_driver_vehicle_color'),
       image: 'img/logo/driver.jpg'
     })
 
@@ -137,7 +138,6 @@
     })
 
     onMounted(async () => {
-
         // lets get the users current location
         await location.updateDestination()
         await location.updateCurrentLocation()

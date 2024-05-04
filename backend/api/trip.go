@@ -10,10 +10,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type TripBikeRequest struct {
+type CreateTripRequest struct {
 	UserId           string   `json:"user_id" binding:"required"`
 	UserPhone        string   `json:"user_phone" binding:"required"`
-	Vehicle          string   `json:"vehicle" binding:"required"`
+	Vehicle          int32    `json:"vehicle" binding:"required"`
 	DeparturePoint   GeoPoint `json:"departure_point" binding:"required"`
 	DepartureName    string   `json:"departure_name" binding:"required"`
 	DestinationPoint GeoPoint `json:"destination_point" binding:"required"`
@@ -29,9 +29,8 @@ type TripCreateResp struct {
 	TripId int64 `json:"trip_id" binding:"required"`
 }
 
-func (server *Server) createTripBike(ctx *gin.Context) {
-	const service_type = 1
-	var request TripBikeRequest
+func (server *Server) createTrip(ctx *gin.Context) {
+	var request CreateTripRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -51,7 +50,7 @@ func (server *Server) createTripBike(ctx *gin.Context) {
 
 	curr_trip, err := server.store.CreateTrip(ctx, db.CreateTripParams{
 		UserID:               user_id,
-		ServiceType:          service_type,
+		ServiceType:          request.Vehicle,
 		DepartureLatitude:    request.DeparturePoint.Latitude,
 		DepartureLongitude:   request.DeparturePoint.Longitude,
 		DepartureName:        request.DepartureName,

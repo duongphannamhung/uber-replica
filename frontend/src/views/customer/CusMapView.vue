@@ -252,10 +252,11 @@
         name : 'cus-schedule-trip-done'
       })
     } else {
+        let vehicle_type = vehicleNameToType(vehicleName);
         let tripRequest = {
         user_id: localStorage.getItem('current_user_id'),
         user_phone: localStorage.getItem('current_user_phone'),
-        vehicle: vehicleName,
+        vehicle: vehicle_type,
         // eslint-disable-next-line
         departure_point : new google.maps.LatLng(location.departure.geometry),
         departure_name: location.departure.display_name,
@@ -264,8 +265,10 @@
         destination_name: location.destination.address,
       }
 
-      if (vehicleName == "UrepBike") {
-        await axios.post('trip/bike', tripRequest, {
+      localStorage.setItem('vehicle_type', vehicle_type);
+
+      // if (vehicleName == "UrepBike") {
+        await axios.post('create-trip', tripRequest, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('cus-token')}`
           }
@@ -298,7 +301,22 @@
           })
       }
     }
-  }
+  // }
+
+const vehicleNameToType = (vehicleName) => {
+    if (vehicleName == 'UrepBike') {
+        return 1
+    } else if (vehicleName == 'UrepCar') {
+        return 2
+    } else if (vehicleName == 'UrepCar 7') {
+        return 3
+    } else if (vehicleName == 'UrepCar Plus') {
+        return 4
+    } else {
+        return -1
+    }
+}
+
 </script>
 
 <style lang="scss">

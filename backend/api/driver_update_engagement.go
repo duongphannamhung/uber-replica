@@ -44,44 +44,27 @@ func (server *Server) driverUpdateEngagement(ctx *gin.Context) {
 
 	params := db.UpdateEngagementLatLngParams{
 		DriverID:   driver_id,
-		Latitude:   request.Latitude,
-		Longitude:  request.Longitude,
-		GeofenceID: 1, // TODO: change this later
+		Latitude:   sql.NullFloat64{Float64: (request.Latitude), Valid: true},
+		Longitude:  sql.NullFloat64{Float64: (request.Longitude), Valid: true},
+		GeofenceID: sql.NullInt32{Int32: 1, Valid: true}, // TODO: change this later
 	}
 
 	_, err = server.store.UpdateEngagementLatLng(ctx, params)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			// User does not exist, create a new one
-			// You need to provide the necessary fields for a new user
-			_, err = server.store.CreateEngagement(ctx, db.CreateEngagementParams{
-				DriverID:   params.DriverID,
-				Status:     1,
-				Latitude:   params.Latitude,
-				Longitude:  params.Longitude,
-				GeofenceID: params.GeofenceID,
-			})
-			if err != nil {
-				log.Fatal("Error creating engagement: ", err)
-				ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-				return
-			}
-		} else {
-			log.Fatal("Error on update engagement: ", err)
-			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-			return
-		}
+		log.Print("Error on update engagement: ", err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
 	}
 
 	_, err = server.store.UpdateEngagementStatus(
 		ctx,
 		db.UpdateEngagementStatusParams{
 			DriverID: params.DriverID,
-			Status:   request.Status,
+			Status:   sql.NullInt32{Int32: request.Status, Valid: true},
 		},
 	)
 	if err != nil {
-		log.Fatal("Error on update engagement: ", err)
+		log.Print("Error on update engagement: ", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
@@ -116,8 +99,8 @@ func (server *Server) currentDriverStatus(ctx *gin.Context) {
 		return
 	}
 
-	resp := DriverStatusResponse{Status: curr_engagement.Status}
-	if curr_engagement.Status != 1 && curr_engagement.Status != 2 {
+	resp := DriverStatusResponse{Status: curr_engagement.Status.Int32}
+	if curr_engagement.Status.Int32 != 1 && curr_engagement.Status.Int32 != 2 {
 		resp.TripId = curr_engagement.InTrip.Int32
 	}
 
@@ -138,7 +121,7 @@ type UpdateTripFareResponse struct {
 func (server *Server) updateTripFare(ctx *gin.Context) {
 	val, err := ctx.GetRawData()
 	if err != nil {
-		log.Fatal("Error getting raw data: ", err)
+		log.Print("Error getting raw data: ", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
@@ -146,7 +129,7 @@ func (server *Server) updateTripFare(ctx *gin.Context) {
 	var update_fare_req UpdateTripFareRequest
 	err = json.Unmarshal(val, &update_fare_req)
 	if err != nil {
-		log.Fatal("Error unmarshalling update trip fare req: ", err)
+		log.Print("Error unmarshalling update trip fare req: ", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 	}
 
@@ -155,7 +138,7 @@ func (server *Server) updateTripFare(ctx *gin.Context) {
 		Fare: sql.NullInt32{Int32: update_fare_req.Fare, Valid: true},
 	})
 	if err != nil {
-		log.Fatal("Error updating trip fare: ", err)
+		log.Print("Error updating trip fare: ", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
@@ -204,7 +187,7 @@ func (server *Server) finishEngagement(ctx *gin.Context) {
 	_, err = server.store.UpdateEngagementStatus(
 		ctx, db.UpdateEngagementStatusParams{
 			DriverID: int32(driver_id),
-			Status:   1,
+			Status:   sql.NullInt32{Int32: 1, Valid: true},
 		})
 
 	if err != nil {
@@ -244,4 +227,32 @@ func (server *Server) finishEngagement(ctx *gin.Context) {
 		DestinationName: trip.DestinationName,
 		TripCreatedAt:   trip.CreatedAt.String(),
 	})
+}
+
+func (server *Server) checkEngagement(ctx *gin.Context) {
+	_driver_id := ctx.Query("driver_id")
+	if _driver_id == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Missing driver_id parameter"})
+		return
+	}
+
+	driver_id, err := strconv.ParseInt(_driver_id, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	_, err = server.store.GetEngagementDriver(ctx, int32(driver_id))
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusOK, false)
+			return
+		}
+
+		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, true)
+	return
 }

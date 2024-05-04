@@ -25,6 +25,11 @@ const routes = [
     component: DriverLoginView
   },
   {
+    path: '/driver-register',
+    name: 'driver-register',
+    component: () => import("../views/driver/DriverRegister.vue"),
+  },
+  {
     path: '/cus-login',
     name: 'cus-login',
     component: CusLoginView

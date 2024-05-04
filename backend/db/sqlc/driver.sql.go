@@ -16,7 +16,7 @@ INSERT INTO drivers (
 ) VALUES (
     $1
 )
-RETURNING id, phone, name, login_code, year, make, model, color, license_plate, created_at
+RETURNING id, phone, login_code, created_at
 `
 
 func (q *Queries) CreateDriver(ctx context.Context, phone string) (Driver, error) {
@@ -25,36 +25,24 @@ func (q *Queries) CreateDriver(ctx context.Context, phone string) (Driver, error
 	err := row.Scan(
 		&i.ID,
 		&i.Phone,
-		&i.Name,
 		&i.LoginCode,
-		&i.Year,
-		&i.Make,
-		&i.Model,
-		&i.Color,
-		&i.LicensePlate,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const deleteDriver = `-- name: DeleteDriver :exec
-
 DELETE FROM drivers
 WHERE id = $1
 `
 
-// -- name: UpdateDriver :one
-// UPDATE drivers
-// SET name = $2
-// WHERE id = $1
-// RETURNING *;
 func (q *Queries) DeleteDriver(ctx context.Context, id int64) error {
 	_, err := q.db.ExecContext(ctx, deleteDriver, id)
 	return err
 }
 
 const getDriver = `-- name: GetDriver :one
-SELECT id, phone, name, login_code, year, make, model, color, license_plate, created_at FROM drivers
+SELECT id, phone, login_code, created_at FROM drivers
 WHERE id = $1 LIMIT 1
 `
 
@@ -64,20 +52,14 @@ func (q *Queries) GetDriver(ctx context.Context, id int64) (Driver, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.Phone,
-		&i.Name,
 		&i.LoginCode,
-		&i.Year,
-		&i.Make,
-		&i.Model,
-		&i.Color,
-		&i.LicensePlate,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getDriverByPhone = `-- name: GetDriverByPhone :one
-SELECT id, phone, name, login_code, year, make, model, color, license_plate, created_at FROM drivers
+SELECT id, phone, login_code, created_at FROM drivers
 WHERE phone = $1 LIMIT 1
 `
 
@@ -87,20 +69,14 @@ func (q *Queries) GetDriverByPhone(ctx context.Context, phone string) (Driver, e
 	err := row.Scan(
 		&i.ID,
 		&i.Phone,
-		&i.Name,
 		&i.LoginCode,
-		&i.Year,
-		&i.Make,
-		&i.Model,
-		&i.Color,
-		&i.LicensePlate,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const listDrivers = `-- name: ListDrivers :many
-SELECT id, phone, name, login_code, year, make, model, color, license_plate, created_at FROM drivers
+SELECT id, phone, login_code, created_at FROM drivers
 ORDER BY id
 LIMIT $1
 OFFSET $2
@@ -123,13 +99,7 @@ func (q *Queries) ListDrivers(ctx context.Context, arg ListDriversParams) ([]Dri
 		if err := rows.Scan(
 			&i.ID,
 			&i.Phone,
-			&i.Name,
 			&i.LoginCode,
-			&i.Year,
-			&i.Make,
-			&i.Model,
-			&i.Color,
-			&i.LicensePlate,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -149,7 +119,7 @@ const updateDriverLoginCode = `-- name: UpdateDriverLoginCode :one
 UPDATE drivers
 SET login_code = $2
 WHERE id = $1
-RETURNING id, phone, name, login_code, year, make, model, color, license_plate, created_at
+RETURNING id, phone, login_code, created_at
 `
 
 type UpdateDriverLoginCodeParams struct {
@@ -163,13 +133,7 @@ func (q *Queries) UpdateDriverLoginCode(ctx context.Context, arg UpdateDriverLog
 	err := row.Scan(
 		&i.ID,
 		&i.Phone,
-		&i.Name,
 		&i.LoginCode,
-		&i.Year,
-		&i.Make,
-		&i.Model,
-		&i.Color,
-		&i.LicensePlate,
 		&i.CreatedAt,
 	)
 	return i, err

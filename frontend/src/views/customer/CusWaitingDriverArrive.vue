@@ -32,10 +32,10 @@
       <div class="border-b"></div>
       <div class="flex justify-between items-center mt-3">
         <div>
-          <p class="font-bold text-lg ml-5">{{ driver_info.name }}</p>          
-          <p class="ml-5">{{ driver_info.carLabel }} | {{ driver_info.carName }}</p>
+          <p class="font-bold text-lg ml-5">{{ driver_info.name.toUpperCase() }}</p>          
+          <p class="ml-5">{{ driver_info.vehicleLabel }} | {{ driver_info.vehicleModel }} | {{ driver_info.vehicleColor }}</p>
           <div style="background-color: lightgray; padding: 4px; width: 125px; margin-left: 20px;">
-            <p style="font-weight: 600;">{{ driver_info.carNumber }}</p>
+            <p style="font-weight: 600;">{{ driver_info.vehicleLicensePlate }}</p>
           </div>
         </div>
         <div>
@@ -132,10 +132,11 @@
   })
 
   const driver_info = ref({
-    name: 'DƯƠNG PHAN NAM HƯNG',
-    carNumber: '59C1-123.45',
-    carName: 'SH',
-    carLabel: 'Honda',
+    name: '',
+    vehicleLicensePlate: '',
+    vehicleModel: '',
+    vehicleLabel: '',
+    vehicleColor: '',
     image: 'img/logo/driver.jpg'
   })
 
@@ -147,6 +148,27 @@
   // const direction = useDirectionStore()
 
   onMounted(async () => {
+    await axios.get(`http://localhost:6969/api/trip/get-driver-info/${localStorage.getItem('current_trip_id')}`, {
+          headers: {
+              Authorization: `Bearer ${localStorage.getItem('cus-token')}`
+          }
+      }).then((resp) => {
+          driver_info.value.name = resp.data.name
+          driver_info.value.vehicleColor = resp.data.color
+          driver_info.value.vehicleLabel = resp.data.label
+          driver_info.value.vehicleModel = resp.data.model
+          driver_info.value.vehicleLicensePlate = resp.data.license_plate
+
+          localStorage.setItem('current_driver_vehicle_model', resp.data.model) 
+          localStorage.setItem('current_driver_name', resp.data.name) 
+          localStorage.setItem('current_vehicle_license_plate', resp.data.license_plate) 
+          localStorage.setItem('current_driver_vehicle_color', resp.data.color) 
+          localStorage.setItem('current_driver_vehicle_label', resp.data.label) 
+      }).catch((error) => {
+          console.error(error)
+          alert(error.response.data.message)
+      })
+
       await axios.get(`http://localhost:6969/api/trip/${localStorage.getItem('current_trip_id')}`, {
           headers: {
               Authorization: `Bearer ${localStorage.getItem('cus-token')}`

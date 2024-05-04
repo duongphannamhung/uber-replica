@@ -81,8 +81,8 @@ const handleVerification = () => {
     axios.post('http://localhost:6969/api/driver/login-phone/verify', getFormattedCredentials())
         .then((response) => {
             localStorage.setItem('driver-token', response.data.access_token)
-            localStorage.setItem('current_driver_phone', response.data.user.phone)
-            localStorage.setItem('current_driver_id', response.data.user.id)
+            localStorage.setItem('current_driver_phone', response.data.driver.phone)
+            localStorage.setItem('current_driver_id', response.data.driver.id)
             router.push({
                 name: 'driver-home'
             })

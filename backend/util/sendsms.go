@@ -11,7 +11,7 @@ import (
 func sendSMS(toNum string, message string) (string, error) {
 	config, err := LoadConfig("../")
 	if err != nil {
-		log.Fatal("[sendSMS] cannot load config: ", err)
+		log.Print("[sendSMS] cannot load config: ", err)
 	}
 
 	twilioClient := twilio.NewRestClientWithParams(twilio.ClientParams{
@@ -26,7 +26,7 @@ func sendSMS(toNum string, message string) (string, error) {
 
 	resp, err := twilioClient.Api.CreateMessage(params)
 	if err != nil {
-		log.Fatal("Error sending SMS message: " + err.Error())
+		log.Print("Error sending SMS message: " + err.Error())
 		return "", err
 	} else {
 		response, _ := json.Marshal(*resp)
