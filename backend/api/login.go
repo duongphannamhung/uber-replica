@@ -35,7 +35,7 @@ func newUserResponse(user db.User) userResponse {
 	}
 }
 
-// type OTP struct {
+// type OTP struct .value{
 // 	Otp   string `json:"otp" binding:"required"`
 // 	Token string `json:"token" binding:"required"`
 // }
@@ -43,7 +43,7 @@ func newUserResponse(user db.User) userResponse {
 func (server *Server) loginPhone(ctx *gin.Context) {
 	val, err := ctx.GetRawData()
 	if err != nil {
-		log.Fatal("Error getting raw data: ", err)
+		log.Print("Error getting raw data: ", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
@@ -51,7 +51,7 @@ func (server *Server) loginPhone(ctx *gin.Context) {
 	var login_request LoginPhoneRequest
 	err = json.Unmarshal(val, &login_request)
 	if err != nil {
-		log.Fatal("Error unmarshalling phone number: ", err)
+		log.Print("Error unmarshalling phone number: ", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 	}
 
@@ -62,12 +62,12 @@ func (server *Server) loginPhone(ctx *gin.Context) {
 			// You need to provide the necessary fields for a new user
 			user, err = server.store.CreateUser(ctx, login_request.Phone)
 			if err != nil {
-				log.Fatal("Error creating user: ", err)
+				log.Print("Error creating user: ", err)
 				ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 				return
 			}
 		} else {
-			log.Fatal("Error getting user by phone: ", err)
+			log.Print("Error getting user by phone: ", err)
 			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 			return
 		}
@@ -86,7 +86,7 @@ func (server *Server) loginPhone(ctx *gin.Context) {
 func (server *Server) verifyLoginPhone(ctx *gin.Context) {
 	val, err := ctx.GetRawData()
 	if err != nil {
-		log.Fatal("Error getting raw data: ", err)
+		log.Print("Error getting raw data: ", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
@@ -94,13 +94,13 @@ func (server *Server) verifyLoginPhone(ctx *gin.Context) {
 	var login_request LoginPhoneRequest
 	err = json.Unmarshal(val, &login_request)
 	if err != nil {
-		log.Fatal("Error unmarshalling phone number: ", err)
+		log.Print("Error unmarshalling phone number: ", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 	}
 
 	user, err := server.store.GetUserByPhone(ctx, login_request.Phone)
 	if err != nil {
-		log.Fatal("Error getting user by phone: ", err)
+		log.Print("Error getting user by phone: ", err)
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}

@@ -26,12 +26,6 @@ SET login_code = $2
 WHERE id = $1
 RETURNING *;
 
--- -- name: UpdateDriver :one
--- UPDATE drivers
--- SET name = $2
--- WHERE id = $1
--- RETURNING *;
-
 -- name: DeleteDriver :exec
 DELETE FROM drivers
 WHERE id = $1;

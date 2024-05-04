@@ -240,6 +240,6 @@
         localStorage.setItem('after_trip', true)
         router.push({
             name : 'driver-home'
-        })
+        }).then(() => window.location.reload())
     }
 </script>

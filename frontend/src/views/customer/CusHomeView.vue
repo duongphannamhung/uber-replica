@@ -96,12 +96,15 @@
     import MagnifyIcon from 'vue-material-design-icons/Magnify.vue';
     import HomeIcon from 'vue-material-design-icons/Home.vue';
     import MapMarkerIcon from 'vue-material-design-icons/MapMarker.vue';
-    // import { onMounted } from '@vue/runtime-core';
+    import { onMounted } from 'vue';
     // import { useDirectionStore } from '@/store/direction-store';
 
     const router = useRouter()
     // const direction = useDirectionStore()
 
+    onMounted(() => {
+      console.log('CusHomeView mounted');
+    });
     // onMounted(() => {
     //   direction.pickup = null
     //   direction.destination = null

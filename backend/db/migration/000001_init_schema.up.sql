@@ -6,16 +6,21 @@ CREATE TABLE "users" (
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
+CREATE TABLE "vehicles" (
+  "id" bigserial PRIMARY KEY ,
+  "name" varchar NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now())
+);
+
+INSERT INTO vehicles (id, name) VALUES ('1', 'UrepBike');
+INSERT INTO vehicles (id, name) VALUES ('2', 'UrepCar');
+INSERT INTO vehicles (id, name) VALUES ('3', 'UrepCar 7');
+INSERT INTO vehicles (id, name) VALUES ('4', 'UrepCar Plus');
+
 CREATE TABLE "drivers" (
   "id" bigserial PRIMARY KEY,
-  "phone" varchar UNIQUE NOT NULL,
-  "name" varchar,
+  "phone" varchar NOT NULL,
   "login_code" varchar,
-  "year" integer,
-  "make" text,
-  "model" text,
-  "color" text,
-  "license_plate" text,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
