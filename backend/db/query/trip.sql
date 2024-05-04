@@ -50,3 +50,6 @@ RETURNING *;
 -- name: DeleteTrip :exec
 DELETE FROM trips
 WHERE id = $1;
+
+-- name: CountAllTrips :one
+SELECT COUNT(*) FROM trips;

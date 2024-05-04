@@ -27,7 +27,7 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 	server := &Server{config: config, store: store, tokenMaker: tokenMaker}
 	router := gin.Default()
 	cors_config := cors.DefaultConfig()
-	cors_config.AllowOrigins = []string{"http://localhost:8080"}
+	cors_config.AllowOrigins = []string{"http://localhost:8080", "http://localhost:3000"}
 	cors_config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization", "Access-Control-Allow-Headers"}
 	// config.AllowAllOrigins = true
 
@@ -54,6 +54,8 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 	authDriverRoutes.POST("/api/driver/update-trip-fare", server.updateTripFare)
 	authDriverRoutes.POST("/api/driver/update-engagement", server.driverUpdateEngagement)
 	authDriverRoutes.POST("/api/driver/finish-engagement", server.finishEngagement)
+
+	router.GET("/api/trip/get-list-trip", server.getListTrip)
 
 	hub := ws.NewHub()
 	wsHandler := ws.NewHandler(hub)

@@ -10,6 +10,17 @@ import (
 	"database/sql"
 )
 
+const countAllTrips = `-- name: CountAllTrips :one
+SELECT COUNT(*) FROM trips
+`
+
+func (q *Queries) CountAllTrips(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countAllTrips)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createTrip = `-- name: CreateTrip :one
 INSERT INTO trips (
     user_id,
