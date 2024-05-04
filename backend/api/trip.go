@@ -118,3 +118,62 @@ func (server *Server) getTripInfo(ctx *gin.Context) {
 	})
 	return
 }
+
+type ResponseListTrip struct {
+	Page       int32     `json:"page"`
+	PerPage    int32     `json:"per_page"`
+	Total      int64     `json:"total"`
+	TotalPages int64     `json:"total_pages"`
+	Data       []db.Trip `json:"data"`
+}
+
+func (server *Server) getListTrip(ctx *gin.Context) {
+	_limit := ctx.DefaultQuery("limit", "10")
+	_offset := ctx.DefaultQuery("offset", "0")
+
+	limit, err := strconv.ParseInt(_limit, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	offset, err := strconv.ParseInt(_offset, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	trips, err := server.store.ListTrips(ctx, db.ListTripsParams{
+		Limit:  int32(limit),
+		Offset: int32(offset),
+	})
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	// Get total count of trips
+	total, err := server.store.CountAllTrips(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	// Calculate total pages
+	totalPages := total / limit
+	if total%limit != 0 {
+		totalPages++
+	}
+
+	response := ResponseListTrip{
+		Page:       int32(offset/limit) + 1,
+		PerPage:    int32(limit),
+		Total:      total,
+		TotalPages: totalPages,
+		Data:       trips,
+	}
+
+	ctx.JSON(http.StatusOK, response)
+	return
+}

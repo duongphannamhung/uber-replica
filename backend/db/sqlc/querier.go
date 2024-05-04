@@ -9,6 +9,7 @@ import (
 )
 
 type Querier interface {
+	CountAllTrips(ctx context.Context) (int64, error)
 	CreateDriver(ctx context.Context, phone string) (Driver, error)
 	CreateEngagement(ctx context.Context, arg CreateEngagementParams) (Engagement, error)
 	CreateTrip(ctx context.Context, arg CreateTripParams) (Trip, error)

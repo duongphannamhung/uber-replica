@@ -31,9 +31,10 @@ const routes = [
   },
   {
     path: '/app/leads', // url
-    icon: <InboxArrowDownIcon className={iconClasses}/>, // icon component
-    name: 'Leads', // name that appear in Sidebar
+    icon: <BoltIcon className={iconClasses}/>, // icon component
+    name: 'Trips', // name that appear in Sidebar
   },
+  // n: <InboxArrowDownIcon className={iconClasses}/>, // icon co
   {
     path: '/app/transactions', // url
     icon: <CurrencyDollarIcon className={iconClasses}/>, // icon component
@@ -44,11 +45,11 @@ const routes = [
     icon: <ChartBarIcon className={iconClasses}/>, // icon component
     name: 'Analytics', // name that appear in Sidebar
   },
-  {
-    path: '/app/integration', // url
-    icon: <BoltIcon className={iconClasses}/>, // icon component
-    name: 'Integration', // name that appear in Sidebar
-  },
+  // {
+  //   path: '/app/integration', // url
+  //   icon: <BoltIcon className={iconClasses}/>, // icon component
+  //   name: 'Integration', // name that appear in Sidebar
+  // },
   {
     path: '/app/calendar', // url
     icon: <CalendarDaysIcon className={iconClasses}/>, // icon component
