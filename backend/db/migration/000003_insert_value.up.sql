@@ -1,4 +1,4 @@
-INSERT INTO "public"."drivers" ("phone", "login_code", "created_at") VALUES ('+84905939757', '828954', '2024-05-04 10:30:17.081323+00')
+INSERT INTO "public"."drivers" ("phone", "login_code", "created_at") VALUES ('+84905939757', '828954', '2024-05-04 10:30:17.081323+00');
 insert into public.drivers (phone, login_code, created_at) values ('+84735835300', 569469, '2023-07-04 15:25:02');
 insert into public.drivers (phone, login_code, created_at) values ('+84343167465', 355285, '2023-09-03 08:31:42');
 insert into public.drivers (phone, login_code, created_at) values ('+84365461427', 431654, '2023-11-17 08:48:52');
@@ -2398,7 +2398,7 @@ insert into public.drivers (phone, login_code, created_at) values ('+84495463280
 insert into public.drivers (phone, login_code, created_at) values ('+84885799000', 144762, '2023-06-28 21:17:03');
 
 
-INSERT INTO "public"."users" ( "name", "phone", "login_code", "created_at") VALUES ('Nam Hưng','+84905939757', '828954', '2024-05-04 11:40:17.569748+00')
+INSERT INTO "public"."users" ( "name", "phone", "login_code", "created_at") VALUES ('Nam Hưng','+84905939757', '828954', '2024-05-04 11:40:17.569748+00');
 insert into public.users (name, phone, login_code, created_at) values ('Finn Claw', '+84266530891', 762081, '2023-06-14 20:56:33');
 insert into public.users (name, phone, login_code, created_at) values ('Wenona Messer', '+84876441328', 533995, '2023-07-08 01:43:09');
 insert into public.users (name, phone, login_code, created_at) values ('Ninon Larmor', '+84817559880', 144619, '2023-12-21 11:59:59');
@@ -5999,7 +5999,7 @@ insert into public.users (name, phone, login_code, created_at) values ('Leland C
 
 INSERT INTO "public"."engagements" ("driver_id", "status", "in_trip", "vehicle_id", "name", "label", "model", "color", "license_plate", "latitude", "longitude", "geofence_id", "created_at") VALUES
 (1, 1, NULL, 1, 'Dương Phan Nam Hưng', 'Honda', 'SH', 'Trắng', '59C1-123.45', 10.7673943, 106.6632872, 1, '2024-05-04 11:34:23.345543+00'),
-(1, 1, NULL, 2, 'Dương Phan Nam Hưng', 'Honda', 'Civic', 'Đen', '51C1-789.10', 10.7673943, 106.6632872, 1, '2024-05-04 11:40:34.032245+00')
+(1, 1, NULL, 2, 'Dương Phan Nam Hưng', 'Honda', 'Civic', 'Đen', '51C1-789.10', 10.7673943, 106.6632872, 1, '2024-05-04 11:40:34.032245+00');
 insert into public.engagements (driver_id, status, vehicle_id, name, label, model, color, license_plate, latitude, longitude, geofence_id, created_at) values (2, 1, 2, 'Charlot Romeo', 'Pontiac', 'Gemini', 'Puce', '89R2-366.72', 58.336, 34.313, 3, '2023-11-09 12:20:47');
 insert into public.engagements (driver_id, status, vehicle_id, name, label, model, color, license_plate, latitude, longitude, geofence_id, created_at) values (3, 1, 2, 'Ronalda Ambroz', 'Chevrolet', '2500', 'Puce', '10V3-269.14', 53.715, 6.263, 12, '2023-09-15 12:23:33');
 insert into public.engagements (driver_id, status, vehicle_id, name, label, model, color, license_plate, latitude, longitude, geofence_id, created_at) values (4, 1, 4, 'Thebault Cork', 'Nissan', 'JUKE', 'Yellow', '36A1-577.11', 36.387, 50.39, 1, '2023-10-03 20:29:31');
