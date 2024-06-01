@@ -22,8 +22,8 @@ services:
     volumes:
       - ./backend/data:/data
     command: "osrm-routed --algorithm mld /data/vietnam-latest.osrm"
-  # app:
-  #   image: pygobe:1
+  # backend:
+  #   image: uber_replica_db:1
   #   container_name: pygobe_app
   #   build:
   #     context: .

@@ -27,8 +27,8 @@ type findDriverDoneResponse struct {
 }
 
 func (server *Server) tripFindDriver(ctx *gin.Context) {
-	_trip_id := ctx.Param("trip_id")
-	_vehicle_type := ctx.Param("vehicle_type")
+	_trip_id := ctx.Query("trip_id")
+	_vehicle_type := ctx.Query("vehicle_type")
 
 	if _trip_id == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Missing trip_id parameter"})

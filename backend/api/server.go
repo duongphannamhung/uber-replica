@@ -57,6 +57,8 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 
 	router.GET("/api/trip/get-list-trip", server.getListTrip)
 
+	router.POST("/api/dashboard/calculate-new-users", server.calculateNewUsers)
+
 	hub := ws.NewHub()
 	wsHandler := ws.NewHandler(hub)
 

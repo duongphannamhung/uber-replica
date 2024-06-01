@@ -10,6 +10,34 @@ import (
 	"database/sql"
 )
 
+const countNewUsers = `-- name: CountNewUsers :one
+SELECT COUNT(distinct CASE WHEN DATE(created_at) >= $1::text::timestamp THEN id ELSE NULL END) as count_users_in_period,
+   COUNT(distinct CASE WHEN DATE(created_at) <= $1::text::timestamp THEN id ELSE NULL END) as count_users_previous_period
+FROM users
+WHERE DATE(created_at) 
+>= DATE_TRUNC('day', 
+    $1::timestamp - CONCAT(DATE_PART('day', 
+        $2::text::timestamp - $1::timestamp
+    )::text, ' day')::interval) AND DATE(created_at) <= $2::timestamp
+`
+
+type CountNewUsersParams struct {
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
+}
+
+type CountNewUsersRow struct {
+	CountUsersInPeriod       int64 `json:"count_users_in_period"`
+	CountUsersPreviousPeriod int64 `json:"count_users_previous_period"`
+}
+
+func (q *Queries) CountNewUsers(ctx context.Context, arg CountNewUsersParams) (CountNewUsersRow, error) {
+	row := q.db.QueryRowContext(ctx, countNewUsers, arg.StartDate, arg.EndDate)
+	var i CountNewUsersRow
+	err := row.Scan(&i.CountUsersInPeriod, &i.CountUsersPreviousPeriod)
+	return i, err
+}
+
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (
     phone
