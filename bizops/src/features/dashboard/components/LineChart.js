@@ -35,7 +35,9 @@ function LineChart(){
   };
 
   
-  const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const currentMonth = new Date().getMonth();
+  const labels = months.slice((currentMonth + 1) % 12).concat(months.slice(0, currentMonth + 1));
 
   const data = {
   labels,
@@ -43,7 +45,7 @@ function LineChart(){
     {
       fill: true,
       label: 'MAU',
-      data: labels.map(() => { return Math.random() * 100 + 500 }),
+      data: labels.map(() => { return Math.random() * 100 + 50 }),
       borderColor: 'rgb(53, 162, 235)',
       backgroundColor: 'rgba(53, 162, 235, 0.5)',
     },
@@ -52,7 +54,7 @@ function LineChart(){
   
 
     return(
-      <TitleCard title={"Montly Active Users (in K)"}>
+      <TitleCard title={"Monthly Active Users"}>
           <Line data={data} options={options}/>
       </TitleCard>
     )

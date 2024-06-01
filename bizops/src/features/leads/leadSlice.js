@@ -3,8 +3,9 @@ import axios from 'axios'
 
 
 
-export const getTrips = createAsyncThunk('/leads/content', async () => {
-	const response = await axios.get('/api/trip/get-list-trip', {})
+export const getTrips = createAsyncThunk('/leads/content', async (page) => {
+    const offset = (page - 1) * 10
+	const response = await axios.get(`/api/trip/get-list-trip?offset=${offset}`, {})
 	return response.data;
 })
 
@@ -15,7 +16,6 @@ export const leadsSlice = createSlice({
         leads : []
     },
     reducers: {
-
 
         addNewLead: (state, action) => {
             let {newLeadObj} = action.payload

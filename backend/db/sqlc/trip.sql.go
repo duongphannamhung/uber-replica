@@ -176,6 +176,106 @@ func (q *Queries) ListTrips(ctx context.Context, arg ListTripsParams) ([]Trip, e
 	return items, nil
 }
 
+const revenueYear = `-- name: RevenueYear :many
+SELECT row_number() over (order by month asc) as row_num,
+	EXTRACT(MONTH FROM month) as month,
+	sum_revenue
+FROM
+(SELECT 
+	DATE_TRUNC('month', created_at) as month,
+    SUM(fare) as sum_revenue
+FROM trips
+where DATE(created_at) >= CURRENT_DATE + INTERVAL '1 month' - INTERVAL '1 year'
+GROUP BY 1) as s
+order by row_number() over (order by month asc)
+limit 12
+`
+
+type RevenueYearRow struct {
+	RowNum     int64  `json:"row_num"`
+	Month      string `json:"month"`
+	SumRevenue int64  `json:"sum_revenue"`
+}
+
+func (q *Queries) RevenueYear(ctx context.Context) ([]RevenueYearRow, error) {
+	rows, err := q.db.QueryContext(ctx, revenueYear)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []RevenueYearRow{}
+	for rows.Next() {
+		var i RevenueYearRow
+		if err := rows.Scan(&i.RowNum, &i.Month, &i.SumRevenue); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const totalRevenue = `-- name: TotalRevenue :one
+SELECT SUM(CASE WHEN DATE(created_at) >= $1::text::timestamp THEN fare ELSE NULL END) as sum_revenue_in_period,
+   SUM(CASE WHEN DATE(created_at) <= $1::text::timestamp THEN fare ELSE NULL END) as sum_revenue_previous_period
+FROM trips
+WHERE DATE(created_at) 
+>= DATE_TRUNC('day', 
+    $1::timestamp - CONCAT(DATE_PART('day', 
+        $2::text::timestamp - $1::timestamp
+    )::text, ' day')::interval) AND DATE(created_at) <= $2::timestamp
+`
+
+type TotalRevenueParams struct {
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
+}
+
+type TotalRevenueRow struct {
+	SumRevenueInPeriod       int64 `json:"sum_revenue_in_period"`
+	SumRevenuePreviousPeriod int64 `json:"sum_revenue_previous_period"`
+}
+
+func (q *Queries) TotalRevenue(ctx context.Context, arg TotalRevenueParams) (TotalRevenueRow, error) {
+	row := q.db.QueryRowContext(ctx, totalRevenue, arg.StartDate, arg.EndDate)
+	var i TotalRevenueRow
+	err := row.Scan(&i.SumRevenueInPeriod, &i.SumRevenuePreviousPeriod)
+	return i, err
+}
+
+const totalTrip = `-- name: TotalTrip :one
+SELECT COUNT(CASE WHEN DATE(created_at) >= $1::text::timestamp THEN id ELSE NULL END) as count_trip_in_period,
+   COUNT(CASE WHEN DATE(created_at) <= $1::text::timestamp THEN id ELSE NULL END) as count_trip_previous_period
+FROM trips
+WHERE DATE(created_at) 
+>= DATE_TRUNC('day', 
+    $1::timestamp - CONCAT(DATE_PART('day', 
+        $2::text::timestamp - $1::timestamp
+    )::text, ' day')::interval) AND DATE(created_at) <= $2::timestamp
+`
+
+type TotalTripParams struct {
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
+}
+
+type TotalTripRow struct {
+	CountTripInPeriod       int64 `json:"count_trip_in_period"`
+	CountTripPreviousPeriod int64 `json:"count_trip_previous_period"`
+}
+
+func (q *Queries) TotalTrip(ctx context.Context, arg TotalTripParams) (TotalTripRow, error) {
+	row := q.db.QueryRowContext(ctx, totalTrip, arg.StartDate, arg.EndDate)
+	var i TotalTripRow
+	err := row.Scan(&i.CountTripInPeriod, &i.CountTripPreviousPeriod)
+	return i, err
+}
+
 const updateStartTrip = `-- name: UpdateStartTrip :one
 UPDATE trips
 SET driver_id = $2,

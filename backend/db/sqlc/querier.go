@@ -10,6 +10,7 @@ import (
 
 type Querier interface {
 	CountAllTrips(ctx context.Context) (int64, error)
+	CountNewUsers(ctx context.Context, arg CountNewUsersParams) (CountNewUsersRow, error)
 	CreateDriver(ctx context.Context, phone string) (Driver, error)
 	CreateEngagement(ctx context.Context, arg CreateEngagementParams) (Engagement, error)
 	CreateTrip(ctx context.Context, arg CreateTripParams) (Trip, error)
@@ -45,6 +46,9 @@ type Querier interface {
 	ListDrivers(ctx context.Context, arg ListDriversParams) ([]Driver, error)
 	ListEngagements(ctx context.Context, arg ListEngagementsParams) ([]Engagement, error)
 	ListTrips(ctx context.Context, arg ListTripsParams) ([]Trip, error)
+	RevenueYear(ctx context.Context) ([]RevenueYearRow, error)
+	TotalRevenue(ctx context.Context, arg TotalRevenueParams) (TotalRevenueRow, error)
+	TotalTrip(ctx context.Context, arg TotalTripParams) (TotalTripRow, error)
 	UpdateDriverLoginCode(ctx context.Context, arg UpdateDriverLoginCodeParams) (Driver, error)
 	UpdateEngagementLatLng(ctx context.Context, arg UpdateEngagementLatLngParams) (Engagement, error)
 	UpdateEngagementStatus(ctx context.Context, arg UpdateEngagementStatusParams) (Engagement, error)

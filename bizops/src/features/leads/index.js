@@ -8,6 +8,7 @@ import { CONFIRMATION_MODAL_CLOSE_TYPES, MODAL_BODY_TYPES } from '../../utils/gl
 import TrashIcon from '@heroicons/react/24/outline/TrashIcon'
 import { showNotification } from '../common/headerSlice'
 import { useState } from "react"
+import Pagination from 'react-js-pagination';
 
 const TopSideButtons = () => {
 
@@ -26,15 +27,28 @@ const TopSideButtons = () => {
 
 function Leads(){
 
+    // const [totalItemsCount, setTotalItemsCount] = useState(0); // Add this line to store the total number of items
     const {leads } = useSelector(state => state.lead)
     const dispatch = useDispatch()
     const [page, setPage] = useState(1);
 
     useEffect(() => {
-        dispatch(getTrips())
-    }, [])
+        dispatch(getTrips(page))
+    }, [page])
 
-    
+    // const fetchTrips = async () => {
+        // const response = await getTrips(page);
+        // setTotalItemsCount(response.total);
+    // };
+
+    // useEffect(() => {
+    //     // Modify this function to also set the total number of items
+    //     // This assumes getTrips returns an object with properties 'items' and 'totalItemsCount'
+    //     // fetchTrips();
+    //     getTrips(page);
+    //     // console.log("totalItemsCount", totalItemsCount)
+    // }, [page]);
+
 
     const getDummyStatus = (index) => {
         if(index % 5 === 0)return <div className="badge">Not Interested</div>
@@ -57,8 +71,8 @@ function Leads(){
     }
 
     const deleteCurrentLead = (index) => {
-        dispatch(openModal({title : "Confirmation", bodyType : MODAL_BODY_TYPES.CONFIRMATION, 
-        extraObject : { message : `Are you sure you want to delete this lead?`, type : CONFIRMATION_MODAL_CLOSE_TYPES.LEAD_DELETE, index}}))
+        // dispatch(openModal({title : "Confirmation", bodyType : MODAL_BODY_TYPES.CONFIRMATION, 
+        // extraObject : { message : `Are you sure you want to delete this lead?`, type : CONFIRMATION_MODAL_CLOSE_TYPES.LEAD_DELETE, index}}))
     }
 
     return(
@@ -102,6 +116,29 @@ function Leads(){
                 </table>
             </div>
             </TitleCard>
+            <style>
+                {`
+                    .pagination li {
+                    display: inline-block !important; margin-right: 10px; /* Add space to the right of each page link */
+                    }
+                    .active-page-link {
+                        font-weight: bold !important;
+                        color: ; /* Set the text color */
+                        border: 1px solid currentColor; /* Use the current text color for the border */
+                        padding: 1px;
+                      }
+                `}
+                </style>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <Pagination
+                    activePage={page}
+                    itemsCountPerPage={10}
+                    totalItemsCount={5000}
+                    pageRangeDisplayed={7}
+                    onChange={(pageNumber) => setPage(pageNumber)}
+                    activeLinkClass="active-page-link"
+                />
+                </div>
         </>
     )
 }
