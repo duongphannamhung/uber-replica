@@ -146,6 +146,7 @@
           intervalId = null;
           intervalGetStatus = null;
 
+          localStorage.setItem('current_trip_id', response.data.trip_id)
           getTripInfo(response.data.trip_id)
         }
       })

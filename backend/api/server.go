@@ -61,6 +61,9 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 	router.POST("/api/dashboard/calculate-total-revenue", server.calculateTotalRevenue)
 	router.POST("/api/dashboard/calculate-total-trips", server.calculateTotalTrip)
 	router.GET("/api/dashboard/calculate-revenue-year", server.calculateRevenueYear)
+	router.POST("/api/create-bizops-trip", server.createBizopsTrip)
+	router.GET("/api/delete-trip/:tripId", server.deleteTrip)
+	router.GET("/api/bizops/find-driver", server.tripFindDriver)
 
 	hub := ws.NewHub()
 	wsHandler := ws.NewHandler(hub)

@@ -31,22 +31,24 @@ INSERT INTO trips (
     departure_name,
     destination_latitude,
     destination_longitude,
-    destination_name
+    destination_name,
+    fare
 ) VALUES (
-    $1, NULL, $2, $3, $4, $5, $6, $7, $8
+    $1, NULL, $2, $3, $4, $5, $6, $7, $8, $9
 )
 RETURNING id, user_id, driver_id, service_type, is_started, departure_latitude, departure_longitude, departure_name, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, fare, created_at
 `
 
 type CreateTripParams struct {
-	UserID               int64   `json:"user_id"`
-	ServiceType          int32   `json:"service_type"`
-	DepartureLatitude    float64 `json:"departure_latitude"`
-	DepartureLongitude   float64 `json:"departure_longitude"`
-	DepartureName        string  `json:"departure_name"`
-	DestinationLatitude  float64 `json:"destination_latitude"`
-	DestinationLongitude float64 `json:"destination_longitude"`
-	DestinationName      string  `json:"destination_name"`
+	UserID               int64         `json:"user_id"`
+	ServiceType          int32         `json:"service_type"`
+	DepartureLatitude    float64       `json:"departure_latitude"`
+	DepartureLongitude   float64       `json:"departure_longitude"`
+	DepartureName        string        `json:"departure_name"`
+	DestinationLatitude  float64       `json:"destination_latitude"`
+	DestinationLongitude float64       `json:"destination_longitude"`
+	DestinationName      string        `json:"destination_name"`
+	Fare                 sql.NullInt32 `json:"fare"`
 }
 
 func (q *Queries) CreateTrip(ctx context.Context, arg CreateTripParams) (Trip, error) {
@@ -59,6 +61,7 @@ func (q *Queries) CreateTrip(ctx context.Context, arg CreateTripParams) (Trip, e
 		arg.DestinationLatitude,
 		arg.DestinationLongitude,
 		arg.DestinationName,
+		arg.Fare,
 	)
 	var i Trip
 	err := row.Scan(
@@ -127,7 +130,8 @@ func (q *Queries) GetTrip(ctx context.Context, id int64) (Trip, error) {
 
 const listTrips = `-- name: ListTrips :many
 SELECT id, user_id, driver_id, service_type, is_started, departure_latitude, departure_longitude, departure_name, destination_latitude, destination_longitude, destination_name, driver_location_latitude, driver_location_longitude, fare, created_at FROM trips
-ORDER BY id
+where created_at <= NOW() AT TIME ZONE 'Asia/Bangkok'
+ORDER BY created_at DESC
 LIMIT $1
 OFFSET $2
 `

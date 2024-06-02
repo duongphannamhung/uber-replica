@@ -92,6 +92,7 @@ const startCountdown = () => {
           clearInterval(intervalId); 
 
           let vehicleName = localStorage.getItem('vehicleName')
+          let fare = ((distance.value.value * 9000) * localStorage.getItem('multiplier') / 1000000).toFixed(0) * 1000;
           let tripRequest = {
             user_id: localStorage.getItem('current_user_id'),
             user_phone: localStorage.getItem('current_user_phone'),
@@ -102,6 +103,7 @@ const startCountdown = () => {
             // eslint-disable-next-line
             destination_point : new google.maps.LatLng(location.destination.geometry),
             destination_name: location.destination.address,
+            fare: fare
         }
 
         // if (vehicleName == "UrepBike") {
@@ -115,18 +117,18 @@ const startCountdown = () => {
 
                 localStorage.setItem('current_trip_id', response.data.trip_id)
 
-                let fare = ((distance.value.value * 9000) * localStorage.getItem('multiplier') / 1000000).toFixed(0) * 1000
+                // let fare = 
 
                 console.log(`fare ${fare}, distance: ${distance.value.value}, multiplier: ${localStorage.getItem('multiplier')}`)
 
-                await axios.post('http://localhost:6969/api/driver/update-trip-fare', {
-                    trip_id: response.data.trip_id,
-                    fare: fare
-                }, {
-                    headers: {
-                    Authorization: `Bearer ${localStorage.getItem('cus-token')}`
-                    }
-                })
+                // await axios.post('http://localhost:6969/api/driver/update-trip-fare', {
+                //     trip_id: response.data.trip_id,
+                //     fare: fare
+                // }, {
+                //     headers: {
+                //     Authorization: `Bearer ${localStorage.getItem('cus-token')}`
+                //     }
+                // })
 
                 localStorage.removeItem('scheduleDateTime')
                 localStorage.removeItem('vehicleName')

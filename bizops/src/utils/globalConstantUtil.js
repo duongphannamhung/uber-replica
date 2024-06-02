@@ -13,6 +13,7 @@ module.exports = Object.freeze({
     },
 
     CONFIRMATION_MODAL_CLOSE_TYPES : {
-        LEAD_DELETE : "LEAD_DELETE",
+        // LEAD_DELETE : "LEAD_DELETE",
+        TRIP_DELETE : "TRIP_DELETE",
     },
 });

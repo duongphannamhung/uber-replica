@@ -39,7 +39,7 @@
             <div class="w-full ml-3">
               <div class="flex items-center justify-between">
                 <div class="text-2xl mb-1">{{ item.name }}</div>
-                <div class="text-xl">{{ calculatePrice(item.priceMultiplier, distance.value) }}</div>
+                <div class="text-xl">{{ convertPriceToVND(calculatePrice(item.priceMultiplier, distance.value)) }}</div>
               </div>
               <div class="text-gray-500">{{ item.description }}</div>
             </div> 
@@ -222,11 +222,13 @@
   const calculatePrice = (multiplier, distance) => {
     let res = (distance * 9000) * multiplier / 1000000
     if (res) {
-      return convertPriceToVND(res.toFixed(0) * 1000)
+      return res.toFixed(0) * 1000
     }
   }
+  // convertPriceToVND(res.toFixed(0) * 1000)
   
   const convertPriceToVND = (price) => {
+    if (!price) return
     let k = 0
     price = price.toString()
     let result = ''
@@ -253,6 +255,7 @@
       })
     } else {
         let vehicle_type = vehicleNameToType(vehicleName);
+        let fare = calculatePrice(item.priceMultiplier, distance.value.value);
         let tripRequest = {
         user_id: localStorage.getItem('current_user_id'),
         user_phone: localStorage.getItem('current_user_phone'),
@@ -263,6 +266,7 @@
         // eslint-disable-next-line
         destination_point : new google.maps.LatLng(location.destination.geometry),
         destination_name: location.destination.address,
+        fare: fare
       }
 
       localStorage.setItem('vehicle_type', vehicle_type);
@@ -276,17 +280,16 @@
           .then(async (response) => {
             localStorage.setItem('current_trip_id', response.data.trip_id)
 
-            let fare = ((distance.value.value * 9000) * item.priceMultiplier / 1000000).toFixed(0) * 1000
             console.log(`fare ${fare}, distance: ${distance.value.value}, multiplier: ${item.priceMultiplier}`)
 
-            await axios.post('http://localhost:6969/api/driver/update-trip-fare', {
-                trip_id: response.data.trip_id,
-                fare: fare
-              }, {
-                headers: {
-                  Authorization: `Bearer ${localStorage.getItem('cus-token')}`
-                }
-              })
+            // await axios.post('http://localhost:6969/api/driver/update-trip-fare', {
+            //     trip_id: response.data.trip_id,
+            //     fare: fare
+            //   }, {
+            //     headers: {
+            //       Authorization: `Bearer ${localStorage.getItem('cus-token')}`
+            //     }
+            //   })
 
             router.push({
               name : 'cus-finding-driver'
