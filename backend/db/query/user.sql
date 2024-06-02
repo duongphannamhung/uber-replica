@@ -6,6 +6,14 @@ INSERT INTO users (
 )
 RETURNING *;
 
+-- name: CreateUserWithName :one
+INSERT INTO users (
+    name, phone
+) VALUES (
+    $1, $2
+)
+RETURNING *;
+
 -- name: GetUser :one
 SELECT * FROM users
 WHERE id = $1 LIMIT 1;

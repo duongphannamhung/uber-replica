@@ -60,6 +60,33 @@ func (q *Queries) CreateUser(ctx context.Context, phone string) (User, error) {
 	return i, err
 }
 
+const createUserWithName = `-- name: CreateUserWithName :one
+INSERT INTO users (
+    name, phone
+) VALUES (
+    $1, $2
+)
+RETURNING id, name, phone, login_code, created_at
+`
+
+type CreateUserWithNameParams struct {
+	Name  sql.NullString `json:"name"`
+	Phone string         `json:"phone"`
+}
+
+func (q *Queries) CreateUserWithName(ctx context.Context, arg CreateUserWithNameParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, createUserWithName, arg.Name, arg.Phone)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Phone,
+		&i.LoginCode,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const deleteUser = `-- name: DeleteUser :exec
 DELETE FROM users
 WHERE id = $1

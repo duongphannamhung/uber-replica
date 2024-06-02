@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"log"
 	"net/http"
 	"strconv"
 	db "uber-replica/db/sqlc"
@@ -18,6 +19,7 @@ type CreateTripRequest struct {
 	DepartureName    string   `json:"departure_name" binding:"required"`
 	DestinationPoint GeoPoint `json:"destination_point" binding:"required"`
 	DestinationName  string   `json:"destination_name" binding:"required"`
+	Fare             int32    `json:"fare"`
 }
 
 type GeoPoint struct {
@@ -57,6 +59,7 @@ func (server *Server) createTrip(ctx *gin.Context) {
 		DestinationLatitude:  request.DestinationPoint.Latitude,
 		DestinationLongitude: request.DestinationPoint.Longitude,
 		DestinationName:      request.DestinationName,
+		Fare:                 sql.NullInt32{Int32: request.Fare, Valid: true},
 	})
 
 	if err != nil {
@@ -176,4 +179,80 @@ func (server *Server) getListTrip(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, response)
 	return
+}
+
+type CreateTripBizopsRequest struct {
+	UserName         string   `json:"user_name" binding:"required"`
+	UserPhone        string   `json:"user_phone" binding:"required"`
+	Vehicle          int32    `json:"vehicle" binding:"required"`
+	DeparturePoint   GeoPoint `json:"departure_point" binding:"required"`
+	DepartureName    string   `json:"departure_name" binding:"required"`
+	DestinationPoint GeoPoint `json:"destination_point" binding:"required"`
+	DestinationName  string   `json:"destination_name" binding:"required"`
+	Fare             int32    `json:"fare"`
+}
+
+func (server *Server) createBizopsTrip(ctx *gin.Context) {
+	var request CreateTripBizopsRequest
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := server.store.GetUserByPhone(ctx, request.UserPhone)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			// User does not exist, create a new one
+			// You need to provide the necessary fields for a new user
+			user, err = server.store.CreateUserWithName(ctx, db.CreateUserWithNameParams{
+				Phone: request.UserPhone,
+				Name:  sql.NullString{String: request.UserName, Valid: true},
+			})
+			if err != nil {
+				log.Print("Error creating user: ", err)
+				ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+				return
+			}
+		} else {
+			log.Print("Error getting user by phone: ", err)
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
+	}
+
+	curr_trip, err := server.store.CreateTrip(ctx, db.CreateTripParams{
+		UserID:               user.ID,
+		ServiceType:          request.Vehicle,
+		DepartureLatitude:    request.DeparturePoint.Latitude,
+		DepartureLongitude:   request.DeparturePoint.Longitude,
+		DepartureName:        request.DepartureName,
+		DestinationLatitude:  request.DestinationPoint.Latitude,
+		DestinationLongitude: request.DestinationPoint.Longitude,
+		DestinationName:      request.DestinationName,
+		Fare:                 sql.NullInt32{Int32: request.Fare, Valid: true},
+	})
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, TripCreateResp{TripId: curr_trip.ID})
+	return
+}
+
+func (server *Server) deleteTrip(ctx *gin.Context) {
+	tripId, err := strconv.ParseInt(ctx.Param("tripId"), 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err = server.store.DeleteTrip(ctx, tripId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, nil)
 }

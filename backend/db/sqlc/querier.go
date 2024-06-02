@@ -15,6 +15,7 @@ type Querier interface {
 	CreateEngagement(ctx context.Context, arg CreateEngagementParams) (Engagement, error)
 	CreateTrip(ctx context.Context, arg CreateTripParams) (Trip, error)
 	CreateUser(ctx context.Context, phone string) (User, error)
+	CreateUserWithName(ctx context.Context, arg CreateUserWithNameParams) (User, error)
 	DeleteDriver(ctx context.Context, id int64) error
 	// -- name: UpdateDriverInfo :one
 	// UPDATE engagements

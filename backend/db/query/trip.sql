@@ -8,9 +8,10 @@ INSERT INTO trips (
     departure_name,
     destination_latitude,
     destination_longitude,
-    destination_name
+    destination_name,
+    fare
 ) VALUES (
-    $1, NULL, $2, $3, $4, $5, $6, $7, $8
+    $1, NULL, $2, $3, $4, $5, $6, $7, $8, $9
 )
 RETURNING *;
 
@@ -20,9 +21,11 @@ WHERE id = $1 LIMIT 1;
 
 -- name: ListTrips :many
 SELECT * FROM trips
-ORDER BY id
+where created_at <= NOW() AT TIME ZONE 'Asia/Bangkok'
+ORDER BY created_at DESC
 LIMIT $1
-OFFSET $2;
+OFFSET $2
+;
 
 
 -- name: UpdateStartTrip :one
