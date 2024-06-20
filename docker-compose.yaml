@@ -35,6 +35,16 @@ services:
   #     - .env
   #   depends_on:
   #     - db
+  grafana:
+    build:
+      context: ./grafana
+    container_name: grafana
+    ports:
+      - 9000:3000
+    volumes:
+      - grafana-data:/var/lib/grafana
 volumes:
   db_home:
     external: false
+  grafana-data:
+    external: true
